@@ -1,0 +1,26 @@
+{
+    "name": "slince/spider",
+    "description": "Slince Spider Library",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Tao",
+            "email": "taosikai@yeah.net"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.5.9",
+        "guzzlehttp/guzzle": "~6.2",
+        "slince/event": "*",
+        "bupt1987/html-parser": "~3.0",
+        "symfony/filesystem": "~3.0",
+        "symfony/console": "~3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Slince\\Spider\\": ""
+        }
+    }
+}

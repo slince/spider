@@ -6,6 +6,8 @@
 namespace Slince\Spider;
 
 use Slince\Event\Dispatcher;
+use Slince\Event\Event;
+use Slince\Spider\Handler\HandlerInterface;
 use Slince\Spider\Resource\Page;
 
 class Spider
@@ -81,16 +83,13 @@ class Spider
      * @var Dispatcher
      */
     protected $dispatcher;
-    
+
+    protected static $junkUrlPattern = '/^\s*(?:#|mailto|javascript)/';
+
     function __construct()
     {
         $this->downloader = new Downloader();
         $this->dispatcher = new Dispatcher();
-    }
-
-    protected function download(Url $url)
-    {
-        return $this->downloader->download($url);
     }
 
     /**
@@ -150,6 +149,25 @@ class Spider
         return $this->dispatcher;
     }
 
+    /**
+     * 添加处理器
+     * @param HandlerInterface $handler
+     */
+    function pushHandler(HandlerInterface $handler)
+    {
+        $this->dispatcher->addSubscriber($handler);
+    }
+
+    /**
+     * 下载资源
+     * @param Url $url
+     * @return Resource
+     */
+    protected function download(Url $url)
+    {
+        return $this->downloader->download($url);
+    }
+
     protected function filterUrl(Url $url)
     {
         //已经下载的链接不再处理
@@ -157,7 +175,7 @@ class Spider
         //不在白名单里的链接要进行合法检查
         if (!in_array($url->getRawUrl(), $this->whitelistUrls)) {
             if (in_array($url->getRawUrl(), $this->blacklistUrls) ||
-                (preg_match("/^\s*(?:#|mailto|javascript)/", $url->getRawUrl()))
+                (preg_match(self::$junkUrlPattern, $url->getRawUrl()))
             ) {
                 $pass = false;
             }
@@ -165,13 +183,17 @@ class Spider
         return $pass;
     }
 
-    protected function processUrl(Url $url, $passFilter = false)
+    /**
+     * 处理资源
+     * @param Url $url
+     */
+    protected function processUrl(Url $url)
     {
         if ($this->filterUrl($url)) {
             $resource = $this->downloader->download($url);
-            $this->dispatcher->dispatch(self::EVENT_CAPTURED_URL, [
+            $this->dispatcher->dispatch(self::EVENT_CAPTURED_URL, new Event(self::EVENT_CAPTURED_URL, $this, [
                 'resource' => $resource
-            ]);
+            ]));
             if (!$resource->isBinary()) {
                 foreach ($resource->getResourceUrls() as $url) {
                     $this->processUrl(Url::createFromUrl($url));
@@ -180,6 +202,10 @@ class Spider
         }
     }
 
+    /**
+     * 开始出发
+     * @param $url
+     */
     function go($url)
     {
         $this->processUrl(Url::createFromUrl($url));

@@ -4,10 +4,13 @@ namespace Slince\Spider\Resource;
 class Image extends Resource
 {
     /**
-     * 资源类型
-     * @var string
+     * 支持的mime type
+     * @var array
      */
-    static $contentType = 'image/jpeg';
+    static $supportedMimeTypes = [
+        'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/ief',
+        'image/svg+xml', 'image/x-icon',
+    ];
 
     function isBinary()
     {

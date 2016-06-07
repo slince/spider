@@ -7,19 +7,13 @@ namespace Slince\Spider\Resource;
 
 use HtmlParser\ParserDom;
 
-class Page extends Resource
+class Html extends Resource
 {
 
     /**
      * @var ParserDom
      */
     protected static $domParser;
-
-    /**
-     * 资源类型
-     * @var string
-     */
-    static $contentType = 'text/html';
 
     /**
      * 页面标题
@@ -40,15 +34,32 @@ class Page extends Resource
     protected $description;
 
     /**
+     * 支持的mime type
+     * @var array
+     */
+    static $supportedMimeTypes = [
+        'text/html'
+    ];
+
+    /**
      * @param string $content
      */
     function setContent($content)
     {
         parent::setContent($content);
         self::getDomParser()->load($content);
-        $this->title = self::getDomParser()->find('title')->getPlainText();
-        $this->keywords = self::getDomParser()->find("meta[name=keywords]", 0)->getPlainText();
-        $this->description = self::getDomParser()->find("meta[name=description]", 0)->getPlainText();
+        $titleDom = self::getDomParser()->find('title', 0);
+        $keywordsDom = self::getDomParser()->find("meta[name=keywords]", 0);
+        $descriptionDom = self::getDomParser()->find("meta[name=description]", 0);
+        if ($titleDom !== false) {
+            $this->title = $titleDom->getPlainText();
+        }
+        if ($keywordsDom !== false) {
+            $this->keywords = $keywordsDom->getPlainText();
+        }
+        if ($descriptionDom !== false) {
+            $this->description = $descriptionDom->getPlainText();
+        }
     }
 
     /**
@@ -57,12 +68,12 @@ class Page extends Resource
      */
     function getResourceUrls()
     {
-        return array_merge(
-            $this->extractCssUrls(),
-            $this->extractImageUrls(),
-            $this->extractScriptUrls(),
-            $this->extractPageUrls()
-        );
+        return $this->handleRawUrls(array_merge(
+            $this->extractCssUrls($this->content),
+            $this->extractImageUrls($this->content),
+            $this->extractScriptUrls($this->content),
+            $this->extractPageUrls($this->content)
+        ));
     }
 
     /**

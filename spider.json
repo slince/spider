@@ -1,0 +1,11 @@
+{
+    "entrance": "http://www.shein.com",
+    "filters": {
+        "urlPattern": [
+            "http://www.shein.com/(\\w+).html"
+        ],
+        "contentType": [
+            "image/png"
+        ]
+    }
+}

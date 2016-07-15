@@ -168,6 +168,11 @@ class Spider
         return $this->downloader->download($url);
     }
 
+    /**
+     * 过滤链接
+     * @param Url $url
+     * @return bool
+     */
     protected function filterUrl(Url $url)
     {
         //已经下载的链接不再处理

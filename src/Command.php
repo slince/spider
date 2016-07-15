@@ -5,6 +5,7 @@
  */
 namespace Slince\Spider;
 
+use Slince\Config\Config;
 use Slince\Event\Event;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -20,18 +21,26 @@ class Command extends BaseCommand
      * 命令名称
      * @var string
      */
-    const COMMAND_NAME = 'thumbnail';
+    const COMMAND_NAME = 'go';
     
     /**
      * @var ProgressBar
      */
     protected $progressBar;
 
+    /**
+     * @var Config
+     */
+    protected $configs;
+
+    function initialize()
+    {
+        $this->configs = new Config();
+    }
+
     function configure()
     {
         $this->setName(static::COMMAND_NAME);
-        $this->addOption('src', 's', InputOption::VALUE_OPTIONAL, 'The source image directory', getcwd() . '/src');
-        $this->addOption('dst', 'd', InputOption::VALUE_OPTIONAL, 'The destination directory to save new images', getcwd());
     }
 
     /**
@@ -42,52 +51,20 @@ class Command extends BaseCommand
      */
     function execute(InputInterface $input, OutputInterface $output)
     {
-        $src = $input->getOption('src');
-        $dst = $input->getOption('dst');
-        $questionHelper = new QuestionHelper();
-        $size = $this->getSizeFromQuestion($questionHelper, $input, $output);
-        $magicHand = new MagicHand($src, $dst, $size);
-        $this->bindEventsForUi($magicHand, $output);
-        $magicHand->run();
-        return true;
-    }
-
-    /**
-     * 询问得到高度和宽度
-     * @param QuestionHelper $questionHelper
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return array
-     */
-    protected function getSizeFromQuestion(QuestionHelper $questionHelper, InputInterface $input, OutputInterface $output)
-    {
-        $validator = function ($answer) {
-            if (!is_numeric($answer)) {
-                throw new \RuntimeException(
-                    'Please input a valid number'
-                );
-            }
-            return $answer;
-        };
-        //询问宽度
-        $question = new Question("Image width you want: ", 50);
-        $question->setValidator($validator);
-        $width = $questionHelper->ask($input, $output, $question);
-        //询问高度
-        $question = new Question("Image height you want: ", 50);
-        $question->setValidator($validator);
-        $height = $questionHelper->ask($input, $output, $question);
-        return [$width, $height];
+        $configFile = getcwd() . '/spider.json';
+        $this->configs->load($configFile);
+        $spider = new Spider();
+        $spider->go($this->configs->get('entrance'));
     }
 
     /**
      * 绑定ui
-     * @param MagicHand $magicHand
+     * @param Spider $spider
      * @param OutputInterface $output
      */
-    protected function bindEventsForUi(MagicHand $magicHand, OutputInterface $output)
+    protected function bindEventsForUi(Spider $spider, OutputInterface $output)
     {
-        $magicHand->getDispatcher()->bind(MagicHand::EVENT_BEGIN, function (Event $event) use ($output){
+        $spider->getDispatcher()->bind(Spider::EVENT_CAPTURE_URL, function (Event $event) use ($output){
             $images = $event->getArgument('images');
             $progressBar = new ProgressBar($output, count($images));
             $output->writeln("Magic Hand started and will be performed {$progressBar->getMaxSteps()} images");
@@ -96,11 +73,11 @@ class Command extends BaseCommand
             $this->progressBar = $progressBar;
         });
 
-        $magicHand->getDispatcher()->bind(MagicHand::EVENT_PROCESS, function (Event $event) use ($output){
+        $spider->getDispatcher()->bind(Spider::EVENT_PROCESS, function (Event $event) use ($output){
             $this->progressBar->advance(1);
         });
 
-        $magicHand->getDispatcher()->bind(MagicHand::EVENT_END, function (Event $event) use ($output){
+        $spider->getDispatcher()->bind(Spider::EVENT_END, function (Event $event) use ($output){
             $this->progressBar->finish();
             $output->writeln(PHP_EOL);
             $output->writeln("Work ok");

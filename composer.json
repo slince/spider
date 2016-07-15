@@ -1,6 +1,6 @@
 {
     "name": "slince/spider",
-    "description": "Slince Spider Library",
+    "description": "Slince Spider",
     "type": "library",
     "license": "Apache-2.0",
     "authors": [
@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Slince\\Spider\\": ""
+            "Slince\\Spider\\": "./src"
         }
     }
 }

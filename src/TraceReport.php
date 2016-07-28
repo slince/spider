@@ -10,12 +10,12 @@ use SplObjectStorage;
 class TraceReport
 {
     /**
-     * @var array
+     * @var SplObjectStorage[]
      */
     protected static $reports;
 
     /**
-     * 记录爬虫经过的链接
+     * 记录爬虫访问过的链接
      * @param Url $url
      */
     static function report(Url $url)
@@ -24,6 +24,10 @@ class TraceReport
         $storage->attach($url);
     }
 
+    /**
+     * @param Url $url
+     * @return bool
+     */
     static function isVisited(Url $url)
     {
         return self::getHostStorage($url->getHost())->contains($url);

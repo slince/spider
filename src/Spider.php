@@ -8,28 +8,9 @@ namespace Slince\Spider;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
 use Slince\Spider\Handler\HandlerInterface;
-use Slince\Spider\Resource\Page;
 
 class Spider
 {
-    /**
-     * 过滤url事件
-     * @var string
-     */
-    const EVENT_FILTERED_URL = 'filteredUrl';
-
-    /**
-     * 采集url内容事件
-     * @var string
-     */
-    const EVENT_CAPTURE_URL = 'captureUrl';
-
-    /**
-     * 采集完毕url内容事件
-     * @var string
-     */
-    const EVENT_CAPTURED_URL= 'capturedUrl';
-
     /**
      * 入口链接
      * @var string
@@ -43,36 +24,16 @@ class Spider
     protected $urlPatterns = [];
 
     /**
-     * 是否只抓取指定链接规则
-     * @var bool
-     */
-    protected $onlyCaptureUrlPatterns = true;
-
-    /**
-     * 黑名单链接
+     * 黑名单链接规则
      * @var array
      */
-    protected $blacklistUrls = [];
+    protected $blackUrlPatterns = [];
 
     /**
      * 白名单链接
      * @var array
      */
-    protected $whitelistUrls = [];
-
-    /**
-     * 允许抓取的host，避免站外链接导致
-     * 抓取过多页面
-     * @var array
-     */
-    protected $allowedCaptureHosts = [];
-
-    /**
-     * 已经下载的链接正则
-     * @var array
-     */
-    protected $downloadedUrlPatterns = [];
-
+    protected $whiteUrlPatterns = [];
 
     /**
      * @var Downloader
@@ -84,6 +45,10 @@ class Spider
      */
     protected $dispatcher;
 
+    /**
+     * 垃圾链接规则
+     * @var string
+     */
     protected static $junkUrlPattern = '/^\s*(?:#|mailto|javascript)/';
 
     function __construct()
@@ -93,52 +58,35 @@ class Spider
     }
 
     /**
-     * @param array $allowedCaptureHosts
+     * @param array $blackUrlPatterns
      */
-    public function setAllowedCaptureHosts($allowedCaptureHosts)
+    public function setBlackUrlPatterns($blackUrlPatterns)
     {
-        $this->allowedCaptureHosts = $allowedCaptureHosts;
+        $this->blackUrlPatterns = $blackUrlPatterns;
     }
 
     /**
      * @return array
      */
-    public function getAllowedCaptureHosts()
+    public function getBlackUrlPatterns()
     {
-        return $this->allowedCaptureHosts;
-    }
-
-
-    /**
-     * @param array $blacklistUrls
-     */
-    public function setBlacklistUrls($blacklistUrls)
-    {
-        $this->blacklistUrls = $blacklistUrls;
+        return $this->blackUrlPatterns;
     }
 
     /**
-     * @return array
+     * @param array $whiteUrlPatterns
      */
-    public function getBlacklistUrls()
+    public function setWhiteUrlPatterns($whiteUrlPatterns)
     {
-        return $this->blacklistUrls;
-    }
-
-    /**
-     * @param array $whitelistUrls
-     */
-    public function setWhitelistUrls($whitelistUrls)
-    {
-        $this->whitelistUrls = $whitelistUrls;
+        $this->whiteUrlPatterns = $whiteUrlPatterns;
     }
 
     /**
      * @return array
      */
-    public function getWhitelistUrls()
+    public function getWhiteUrlPatterns()
     {
-        return $this->whitelistUrls;
+        return $this->whiteUrlPatterns;
     }
 
     /**
@@ -175,28 +123,51 @@ class Spider
      */
     protected function filterUrl(Url $url)
     {
-        //已经下载的链接不再处理
-        $pass = !TraceReport::isVisited($url);
-        //不在白名单里的链接要进行合法检查
-        if (!in_array($url->getRawUrl(), $this->whitelistUrls)) {
-            if (in_array($url->getRawUrl(), $this->blacklistUrls) ||
-                (preg_match(self::$junkUrlPattern, $url->getRawUrl()))
-            ) {
-                $pass = false;
-            }
+        //junk url或者已经访问的链接不再处理
+        if (preg_match(self::$junkUrlPattern, $url->getRawUrl()) || TraceReport::isVisited($url)) {
+            return false;
         }
-        return $pass;
+        //如果是白名单规则一定通过
+        if ($this->checkedUrlPatterns($url->getRawUrl(), $this->whiteUrlPatterns)) {
+            return true;
+        }
+        //如果符合黑名单规则直接据掉
+        if ($this->checkedUrlPatterns($url->getRawUrl(), $this->blackUrlPatterns)) {
+            return false;
+        }
+        //默认通过
+        return true;
     }
 
     /**
-     * 处理资源
+     * 检查正则
+     * @param $url
+     * @param array $patterns
+     * @return bool
+     */
+    protected function checkedUrlPatterns($url, array $patterns)
+    {
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $url)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 处理链接资源
      * @param Url $url
      */
     protected function processUrl(Url $url)
     {
         if ($this->filterUrl($url)) {
+            $this->dispatcher->dispatch(EventStore::CAPTURE_URL, new Event(EventStore::CAPTURED_URL, $this, [
+                'url' => $url
+            ]));
             $resource = $this->downloader->download($url);
-            $this->dispatcher->dispatch(self::EVENT_CAPTURED_URL, new Event(self::EVENT_CAPTURED_URL, $this, [
+            $this->dispatcher->dispatch(EventStore::CAPTURED_URL, new Event(EventStore::CAPTURED_URL, $this, [
+                'url' => $url,
                 'resource' => $resource
             ]));
             if (!$resource->isBinary()) {
@@ -211,7 +182,7 @@ class Spider
      * 开始出发
      * @param $url
      */
-    function go($url)
+    function run($url)
     {
         $this->processUrl(Url::createFromUrl($url));
     }

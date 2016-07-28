@@ -5,8 +5,13 @@
  */
 namespace Slince\Spider\Resource;
 
+use Slince\Spider\Url;
+
 interface ResourceInterface
 {
+    /**
+     * @return Url
+     */
     function getUrl();
 
     function getContent();

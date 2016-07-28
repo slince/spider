@@ -10,5 +10,4 @@ use Slince\Spider\Resource\ResourceInterface;
 
 interface HandlerInterface extends SubscriberInterface
 {
-    function handle(ResourceInterface $resource);
 }

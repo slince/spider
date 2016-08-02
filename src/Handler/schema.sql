@@ -1,0 +1,9 @@
+drop table if exists resources;
+create table resources(
+    id int not null auto_increment primary key comment 'PK',
+    url varchar(200) not null default '' comment 'Url',
+    content_type varchar(20) not null default '' comment 'Mime type',
+    content text comment 'Content',
+    create_time char(10) not null default '' comment 'Create time',
+    last_visit_time char(10) not null default '' comment 'Last visit time'
+)engine innodb character set utf8 collate utf8_general_ci comment 'resource table';

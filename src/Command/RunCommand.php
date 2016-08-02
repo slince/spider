@@ -3,11 +3,12 @@
  * slince spider library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Slince\Spider;
+namespace Slince\Spider\Command;
 
 use Slince\Config\Config;
 use Slince\Event\Event;
-use Symfony\Component\Console\Command\Command as BaseCommand;
+use Slince\Spider\Factory;
+use Slince\Spider\Spider;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,13 +16,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
-class Command extends BaseCommand
+class RunCommand extends Command
 {
     /**
      * 命令名称
      * @var string
      */
-    const COMMAND_NAME = 'go';
+    const COMMAND_NAME = 'run';
     
     /**
      * @var ProgressBar
@@ -33,8 +34,9 @@ class Command extends BaseCommand
      */
     protected $configs;
 
-    function initialize()
+    function initialize(InputInterface $input, OutputInterface $output)
     {
+        parent::initialize($input, $output);
         $this->configs = new Config();
     }
 
@@ -54,11 +56,24 @@ class Command extends BaseCommand
         $configFile = getcwd() . '/spider.json';
         $this->configs->load($configFile);
         $spider = new Spider();
-        $spider->go($this->configs->get('entrance'));
+        $this->setSpider($spider);
+        $this->prepare();
+        $spider->run($this->configs->get('entrance'));
     }
 
     /**
-     * 绑定ui
+     * Prepare before run
+     * @param OutputInterface $output
+     */
+    protected  function prepare(OutputInterface $output)
+    {
+        $handler = Factory::createHandler($this->configs['handler']['type'], $this->configs['handler']['config']);
+        $this->getSpider()->pushHandler($handler);
+//        $this->bindEventsForUi($this->getSpider(), $output);
+    }
+
+    /**
+     * Bind Ui
      * @param Spider $spider
      * @param OutputInterface $output
      */

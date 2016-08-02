@@ -1,11 +1,22 @@
 {
     "entrance": "http://www.shein.com",
     "filters": {
-        "urlPattern": [
-            "http://www.shein.com/(\\w+).html"
-        ],
-        "contentType": [
-            "image/png"
-        ]
+        "url": {
+            "whitUrlPatterns": [
+
+            ],
+            "blackPatterns": [
+
+            ]
+        }
+    },
+    "handler": {
+        "type": "database",
+        "config": {
+            "host": "127.0.0.1",
+            "database": "spider",
+            "username": "root",
+            "password": ""
+        }
     }
 }

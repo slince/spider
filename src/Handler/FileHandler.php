@@ -13,6 +13,12 @@ use Symfony\Component\Filesystem\Filesystem;
 class FileHandler extends AbstractHandler
 {
     /**
+     * Name
+     * @var string
+     */
+    const NAME = 'file';
+
+    /**
      * @var string
      */
     protected $savePath;

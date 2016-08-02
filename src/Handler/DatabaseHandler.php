@@ -5,6 +5,8 @@
  */
 namespace Slince\Spider\Handler;
 
+use Slince\Event\Event;
+use Slince\Spider\EventStore;
 use Cake\Database\Connection;
 
 class DatabaseHandler extends AbstractHandler
@@ -62,10 +64,12 @@ class DatabaseHandler extends AbstractHandler
         $data = [
             'url' => $resource->getUrl(),
             'content_type' => $resource->getContentType(),
-            'content' => $resource->getContent(),
+            'size' => $resource->getContent()->getSize(),
+            'content' => 1233,
             'create_time' => time(),
             'last_visit_time' => time()
         ];
+        print_r($data);exit;
         $this->connection->insert(static::RESOURCE_TABLE, $data);
     }
 }

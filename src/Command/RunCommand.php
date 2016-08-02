@@ -63,13 +63,12 @@ class RunCommand extends Command
 
     /**
      * Prepare before run
-     * @param OutputInterface $output
      */
-    protected  function prepare(OutputInterface $output)
+    protected  function prepare()
     {
         $handler = Factory::createHandler($this->configs['handler']['type'], $this->configs['handler']['config']);
         $this->getSpider()->pushHandler($handler);
-//        $this->bindEventsForUi($this->getSpider(), $output);
+//        $this->bindEventsForUi($this->getSpider(), $this->output);
     }
 
     /**

@@ -29,7 +29,6 @@ class CommandUI
     {
         $application = new Application();
         $application->addCommands(self::createCommands());
-        $application->setDefaultCommand(Command::COMMAND_NAME);
         $application->setAutoExit(true);
         $application->run();
     }

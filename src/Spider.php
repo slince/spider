@@ -18,12 +18,6 @@ class Spider
     protected $rawEntranceUrl;
 
     /**
-     * 要抓取的链接正则
-     * @var array
-     */
-    protected $urlPatterns = [];
-
-    /**
      * 黑名单链接规则
      * @var array
      */
@@ -135,6 +129,9 @@ class Spider
         if ($this->checkedUrlPatterns($url->getRawUrl(), $this->blackUrlPatterns)) {
             return false;
         }
+        $this->dispatcher->dispatch(EventStore::FILTERED_URL, new Event(EventStore::FILTERED_URL, $this, [
+            'url' => $url
+        ]));
         //默认通过
         return true;
     }

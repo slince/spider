@@ -11,17 +11,17 @@ class EventStore
      * 过滤url事件
      * @var string
      */
-    const FILTERED_URL = 'filteredUrl';
+    const FILTER_URL = 'filterUrl';
 
     /**
      * 采集url内容事件
      * @var string
      */
-    const CAPTURE_URL = 'captureUrl';
+    const COLLECT_URL = 'collectUrl';
 
     /**
      * 采集完毕url内容事件
      * @var string
      */
-    const CAPTURED_URL= 'capturedUrl';
+    const COLLECTED_URL= 'collectedUrl';
 }

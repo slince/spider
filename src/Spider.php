@@ -127,11 +127,9 @@ class Spider
         if ($this->checkedUrlPatterns($url->getRawUrl(), $this->blackUrlPatterns)) {
             return false;
         }
-        $this->dispatcher->dispatch(EventStore::FILTERED_URL, new Event(EventStore::FILTERED_URL, $this, [
-            'url' => $url
-        ]));
-        //默认通过
-        return true;
+        $filterUrlEvent = new FilterUrlEvent($url, $this);
+        $this->dispatcher->dispatch(EventStore::FILTERED_URL, new FilterUrlEvent($url, $this));
+        return !$filterUrlEvent->isSkipped();
     }
 
     /**

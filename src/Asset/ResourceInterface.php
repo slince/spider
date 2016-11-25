@@ -3,11 +3,11 @@
  * slince spider library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Slince\Spider\Resource;
+namespace Slince\Spider\Asset;
 
 use Slince\Spider\Url;
 
-interface ResourceInterface
+interface AssetInterface
 {
     /**
      * @return Url

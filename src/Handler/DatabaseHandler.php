@@ -21,7 +21,7 @@ class DatabaseHandler extends AbstractHandler
      * database table
      * @var string
      */
-    const RESOURCE_TABLE = 'resources';
+    const RESOURCE_TABLE = 'assets';
     /**
      * @var Connection
      */
@@ -60,11 +60,11 @@ class DatabaseHandler extends AbstractHandler
      */
     function process(Event $event)
     {
-        $resource = $event->getArgument('resource');
+        $asset = $event->getArgument('asset');
         $data = [
-            'url' => $resource->getUrl(),
-            'content_type' => $resource->getContentType(),
-            'size' => $resource->getContent()->getSize(),
+            'url' => $asset->getUrl(),
+            'content_type' => $asset->getContentType(),
+            'size' => $asset->getContent()->getSize(),
             'content' => 1233,
             'create_time' => time(),
             'last_visit_time' => time()

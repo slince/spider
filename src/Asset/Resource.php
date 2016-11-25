@@ -3,30 +3,30 @@
  * slince spider library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Slince\Spider\Resource;
+namespace Slince\Spider\Asset;
 
 use Slince\Spider\Url;
 
-class Resource implements ResourceInterface
+class Asset implements AssetInterface
 {
     /**
      * 支持的资源类型
      * @var array
      */
-    static $supportedResource = [
-        'Slince\Spider\Resource\Html',
-        'Slince\Spider\Resource\Image',
-        'Slince\Spider\Resource\Css',
-        'Slince\Spider\Resource\Script',
-        'Slince\Spider\Resource\Pdf',
-        'Slince\Spider\Resource\Text',
+    static $supportedAsset = [
+        'Slince\Spider\Asset\Html',
+        'Slince\Spider\Asset\Image',
+        'Slince\Spider\Asset\Css',
+        'Slince\Spider\Asset\Script',
+        'Slince\Spider\Asset\Pdf',
+        'Slince\Spider\Asset\Text',
     ];
 
     /**
      * 默认资源
      * @var string
      */
-    static $defaultResource = 'Slince\Spider\Resource\Unknown';
+    static $defaultAsset = 'Slince\Spider\Asset\Unknown';
     /**
      * 支持的mime type
      * @var array
@@ -177,19 +177,19 @@ class Resource implements ResourceInterface
      */
     static function create(Url $url, $content, $contentType)
     {
-        static $resourceClasses = [];
-        if (!isset($resourceClasses[$contentType])) {
-            foreach (self::$supportedResource as $resource) {
-                if (in_array($contentType, call_user_func([$resource, 'getSupportedMimeTypes']))) {
-                    $resourceClasses[$contentType] = $resource;
+        static $assetClasses = [];
+        if (!isset($assetClasses[$contentType])) {
+            foreach (self::$supportedAsset as $asset) {
+                if (in_array($contentType, call_user_func([$asset, 'getSupportedMimeTypes']))) {
+                    $assetClasses[$contentType] = $asset;
                 }
             }
         }
-        if (!isset($resourceClasses[$contentType])) {
-            $resourceClass = self::$defaultResource;
+        if (!isset($assetClasses[$contentType])) {
+            $assetClass = self::$defaultAsset;
         } else {
-            $resourceClass = $resourceClasses[$contentType];
+            $assetClass = $assetClasses[$contentType];
         }
-        return new $resourceClass($url, $content, $contentType);
+        return new $assetClass($url, $content, $contentType);
     }
 }

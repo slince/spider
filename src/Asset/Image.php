@@ -1,7 +1,7 @@
 <?php
-namespace Slince\Spider\Resource;
+namespace Slince\Spider\Asset;
 
-class Image extends Resource
+class Image extends Asset
 {
     /**
      * 支持的mime type

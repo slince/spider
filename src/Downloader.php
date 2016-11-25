@@ -6,7 +6,7 @@
 namespace Slince\Spider;
 
 use GuzzleHttp\Client;
-use Slince\Spider\Resource\Resource;
+use Slince\Spider\Asset\Asset;
 
 class Downloader
 {
@@ -23,7 +23,7 @@ class Downloader
 
     /**
      * @param Url $url
-     * @return Resource
+     * @return Asset
      */
     function download(Url $url)
     {
@@ -32,7 +32,7 @@ class Downloader
         if ($response->getStatusCode() == '200') {
             $contentTypeString = $response->getHeaderLine('Content-type');
             $contentType = trim(strstr($contentTypeString, ';', true));
-            return Resource::create($url, $response->getBody(), $contentType);
+            return Asset::create($url, $response->getBody(), $contentType);
         }
         return false;
     }

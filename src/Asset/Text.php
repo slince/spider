@@ -1,7 +1,7 @@
 <?php
-namespace Slince\Spider\Resource;
+namespace Slince\Spider\Asset;
 
-class Text extends Resource
+class Text extends Asset
 {
     /**
      * 支持的mime type
@@ -13,7 +13,7 @@ class Text extends Resource
      * 获取所有资源链接
      * @return array
      */
-    function getResourceUrls()
+    function getAssetUrls()
     {
         return [];
     }

@@ -3,11 +3,11 @@
  * slince spider library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Slince\Spider\Resource;
+namespace Slince\Spider\Asset;
 
 use HtmlParser\ParserDom;
 
-class Html extends Resource
+class Html extends Asset
 {
 
     /**
@@ -66,7 +66,7 @@ class Html extends Resource
      * 获取所有资源链接
      * @return array
      */
-    function getResourceUrls()
+    function getAssetUrls()
     {
         return $this->handleRawUrls(array_merge(
             $this->extractCssUrls($this->content),

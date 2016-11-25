@@ -103,7 +103,7 @@ class Spider
     /**
      * 下载资源
      * @param Url $url
-     * @return Resource
+     * @return Asset
      */
     protected function download(Url $url)
     {
@@ -162,13 +162,13 @@ class Spider
             $this->dispatcher->dispatch(EventStore::CAPTURE_URL, new Event(EventStore::CAPTURED_URL, $this, [
                 'url' => $url
             ]));
-            $resource = $this->downloader->download($url);
+            $asset = $this->downloader->download($url);
             $this->dispatcher->dispatch(EventStore::CAPTURED_URL, new Event(EventStore::CAPTURED_URL, $this, [
                 'url' => $url,
-                'resource' => $resource
+                'asset' => $asset
             ]));
-            if (!$resource->isBinary()) {
-                foreach ($resource->getResourceUrls() as $url) {
+            if (!$asset->isBinary()) {
+                foreach ($asset->getAssetUrls() as $url) {
                     $this->processUrl(Url::createFromUrl($url));
                 }
             }

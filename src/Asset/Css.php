@@ -1,7 +1,7 @@
 <?php
-namespace Slince\Spider\Resource;
+namespace Slince\Spider\Asset;
 
-class Css extends Resource
+class Css extends Asset
 {
     /**
      * 支持的mime type
@@ -13,7 +13,7 @@ class Css extends Resource
      * 获取所有资源链接
      * @return array
      */
-    function getResourceUrls()
+    function getAssetUrls()
     {
         return $this->handleRawUrls(array_merge(
             $this->extractCssUrls($this->content),

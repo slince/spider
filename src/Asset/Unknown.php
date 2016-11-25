@@ -1,19 +1,19 @@
 <?php
-namespace Slince\Spider\Resource;
+namespace Slince\Spider\Asset;
 
-class Pdf extends Resource
+class Unknown extends Asset
 {
     /**
      * 支持的mime type
      * @var array
      */
-    static $supportedMimeTypes = ['application/pdf'];
+    static $supportedMimeTypes = ['*'];
 
     /**
      * 获取所有资源链接
      * @return array
      */
-    function getResourceUrls()
+    function getAssetUrls()
     {
         return [];
     }

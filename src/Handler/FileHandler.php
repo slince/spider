@@ -7,7 +7,7 @@ namespace Slince\Spider\Handler;
 
 use Slince\Event\Event;
 use Slince\Spider\EventStore;
-use Slince\Spider\Resource\ResourceInterface;
+use Slince\Spider\Asset\AssetInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 class FileHandler extends AbstractHandler
@@ -50,18 +50,18 @@ class FileHandler extends AbstractHandler
      */
     function process(Event $event)
     {
-        $resource = $event->getArgument('resource');
-        $filename = $this->generateFilename($resource);
-        $this->filesystem->dumpFile($filename, $resource->getContent());
+        $asset = $event->getArgument('asset');
+        $filename = $this->generateFilename($asset);
+        $this->filesystem->dumpFile($filename, $asset->getContent());
     }
 
     /**
      * 生成文件名
-     * @param ResourceInterface $resource
+     * @param AssetInterface $asset
      * @return string
      */
-    protected function generateFilename(ResourceInterface $resource)
+    protected function generateFilename(AssetInterface $asset)
     {
-        return rtrim($this->savePath, '\\/') . '/' . $resource->getUrl();
+        return rtrim($this->savePath, '\\/') . '/' . $asset->getUrl();
     }
 }

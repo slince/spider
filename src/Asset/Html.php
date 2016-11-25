@@ -44,7 +44,7 @@ class Html extends Asset
     /**
      * @param string $content
      */
-    function setContent($content)
+    public function setContent($content)
     {
         parent::setContent($content);
         self::getDomParser()->load($content);
@@ -66,7 +66,7 @@ class Html extends Asset
      * 获取所有资源链接
      * @return array
      */
-    function getAssetUrls()
+    public function getAssetUrls()
     {
         return $this->handleRawUrls(array_merge(
             $this->extractCssUrls($this->content),

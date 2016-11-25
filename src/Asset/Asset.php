@@ -27,6 +27,7 @@ class Asset implements AssetInterface
      * @var string
      */
     static $defaultAsset = 'Slince\Spider\Asset\Unknown';
+
     /**
      * 支持的mime type
      * @var array
@@ -48,7 +49,7 @@ class Asset implements AssetInterface
      */
     protected $contentType;
 
-    function __construct(Url $url, $content, $contentType)
+    public function __construct(Url $url, $content, $contentType)
     {
         $this->setUrl($url);
         $this->setContentType($contentType);
@@ -68,7 +69,7 @@ class Asset implements AssetInterface
     /**
      * @return Url
      */
-    function getUrl()
+    public function getUrl()
     {
         return $this->url;
     }
@@ -76,7 +77,7 @@ class Asset implements AssetInterface
     /**
      * @return string
      */
-    function getContent()
+    public function getContent()
     {
         return $this->content;
     }
@@ -92,7 +93,7 @@ class Asset implements AssetInterface
     /**
      * @return mixed
      */
-    function getContentType()
+    public function getContentType()
     {
         return $this->contentType;
     }
@@ -109,7 +110,7 @@ class Asset implements AssetInterface
      * 是否是二进制资源
      * @return bool
      */
-    function isBinary()
+    public function isBinary()
     {
         return false;
     }

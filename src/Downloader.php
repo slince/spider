@@ -16,7 +16,7 @@ class Downloader
      */
     protected $client;
 
-    function __construct()
+    public function __construct()
     {
         $this->client = $this->createHttpClient();
     }
@@ -25,7 +25,7 @@ class Downloader
      * @param Url $url
      * @return Asset
      */
-    function download(Url $url)
+    public function download(Url $url)
     {
         $response = $this->client->get($url);
         $url->setParameter('response', $response);

@@ -7,6 +7,7 @@ namespace Slince\Spider;
 
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
+use Slince\Spider\Asset\Asset;
 use Slince\Spider\Handler\HandlerInterface;
 
 class Spider
@@ -40,12 +41,18 @@ class Spider
     protected $dispatcher;
 
     /**
+     * 已经下载的资源
+     * @var Asset[]
+     */
+    protected $assets = [];
+
+    /**
      * 垃圾链接规则
      * @var string
      */
     protected static $junkUrlPattern = '/^\s*(?:#|mailto|javascript)/';
 
-    function __construct()
+    public function __construct()
     {
         $this->downloader = new Downloader();
         $this->dispatcher = new Dispatcher();
@@ -89,15 +96,6 @@ class Spider
     public function getDispatcher()
     {
         return $this->dispatcher;
-    }
-
-    /**
-     * 添加处理器
-     * @param HandlerInterface $handler
-     */
-    function pushHandler(HandlerInterface $handler)
-    {
-        $this->dispatcher->addSubscriber($handler);
     }
 
     /**
@@ -167,6 +165,8 @@ class Spider
                 'url' => $url,
                 'asset' => $asset
             ]));
+            $this->assets[] = $asset;
+            TraceReport::report($url);
             if (!$asset->isBinary()) {
                 foreach ($asset->getAssetUrls() as $url) {
                     $this->processUrl(Url::createFromUrl($url));
@@ -179,7 +179,7 @@ class Spider
      * 开始出发
      * @param $url
      */
-    function run($url)
+    public function run($url)
     {
         $this->processUrl(Url::createFromUrl($url));
     }

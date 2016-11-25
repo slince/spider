@@ -78,7 +78,7 @@ class Url
      */
     protected $parameters = [];
 
-    function __construct($scheme = null, $host = null, $port = null, $path = null, $query = null, $fragment = null)
+    public function __construct($scheme = null, $host = null, $port = null, $path = null, $query = null, $fragment = null)
     {
         $this->setScheme($scheme);
         $this->setHost($host);
@@ -88,7 +88,7 @@ class Url
         $this->setFragment($fragment);
     }
 
-    function __toString()
+    public function __toString()
     {
         return $this->getUrlString();
     }
@@ -97,7 +97,7 @@ class Url
      * 转换成字符串形式链接
      * @return string
      */
-    function getUrlString()
+    public function getUrlString()
     {
         return function_exists('http_build_url') ? http_build_url([
             'scheme' => $this->scheme,
@@ -124,7 +124,7 @@ class Url
      * 获取根域名
      * @return string
      */
-    function getOrigin()
+    public function getOrigin()
     {
         $scheme = $this->getScheme();
         $schemeFragment = $scheme . '://';
@@ -287,7 +287,7 @@ class Url
      * @param $name
      * @param $parameter
      */
-    function setParameter($name, $parameter)
+    public function setParameter($name, $parameter)
     {
         $this->parameters[$name] = $parameter;
     }
@@ -297,7 +297,7 @@ class Url
      * @param null $default
      * @return mixed|null
      */
-    function getParameter($name, $default = null)
+    public function getParameter($name, $default = null)
     {
         return isset($this->parameters[$name]) ? $this->parameters[$name] : $default;
     }

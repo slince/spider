@@ -20,7 +20,7 @@ class TraceReport
      */
     static function report(Url $url)
     {
-        $storage = self::getHostStorage($url->getHost());
+        $storage = static::getHostStorage($url->getHost());
         $storage->attach($url);
     }
 
@@ -30,7 +30,7 @@ class TraceReport
      */
     static function isVisited(Url $url)
     {
-        return self::getHostStorage($url->getHost())->contains($url);
+        return static::getHostStorage($url->getHost())->contains($url);
     }
 
     /**
@@ -39,9 +39,9 @@ class TraceReport
      */
     protected static function getHostStorage($host)
     {
-        if (empty(self::$reports[$host])){
-            self::$reports[$host] = new SplObjectStorage();
+        if (!isset(static::$reports[$host])){
+            static::$reports[$host] = new SplObjectStorage();
         }
-        return self::$reports[$host];
+        return static::$reports[$host];
     }
 }

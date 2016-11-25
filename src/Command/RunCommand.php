@@ -34,13 +34,13 @@ class RunCommand extends Command
      */
     protected $configs;
 
-    function initialize(InputInterface $input, OutputInterface $output)
+    public function initialize(InputInterface $input, OutputInterface $output)
     {
         parent::initialize($input, $output);
         $this->configs = new Config();
     }
 
-    function configure()
+    public function configure()
     {
         $this->setName(static::COMMAND_NAME);
     }
@@ -51,7 +51,7 @@ class RunCommand extends Command
      * @param OutputInterface $output
      * @return true
      */
-    function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $configFile = getcwd() . '/spider.json';
         $this->configs->load($configFile);

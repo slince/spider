@@ -13,7 +13,7 @@ class Text extends Asset
      * 获取所有资源链接
      * @return array
      */
-    function getAssetUrls()
+    public function getAssetUrls()
     {
         return [];
     }

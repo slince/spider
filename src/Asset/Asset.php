@@ -13,7 +13,7 @@ class Asset implements AssetInterface
      * 支持的mime type
      * @var array
      */
-    static $supportedMimeTypes = ['*'];
+    protected static $supportedMimeTypes = ['*'];
 
     /**
      * @var Url
@@ -48,7 +48,7 @@ class Asset implements AssetInterface
     }
 
     /**
-     * @return Url
+     * {@inheritdoc}
      */
     public function getUrl()
     {
@@ -56,7 +56,7 @@ class Asset implements AssetInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getContent()
     {
@@ -72,7 +72,7 @@ class Asset implements AssetInterface
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getContentType()
     {
@@ -86,14 +86,21 @@ class Asset implements AssetInterface
     {
         $this->contentType = $contentType;
     }
-
+    
     /**
-     * 是否是二进制资源
-     * @return bool
+     * {@inheritdoc}
      */
     public function isBinary()
     {
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAssetUrls()
+    {
+        return [];
     }
 
     /**
@@ -142,8 +149,7 @@ class Asset implements AssetInterface
     }
 
     /**
-     * 获取支持的文件类型
-     * @return array
+     * {@inheritdoc}
      */
     public static function getSupportedMimeTypes()
     {

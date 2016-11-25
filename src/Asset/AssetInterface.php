@@ -28,6 +28,18 @@ interface AssetInterface
     public function getContentType();
 
     /**
+     * 获取子资源url
+     * @return Url[]
+     */
+    public function getAssetUrls();
+
+    /**
+     * 是否是二进制资源
+     * @return bool
+     */
+    public function isBinary();
+
+    /**
      * 获取支持的资源类型
      * @return array
      */

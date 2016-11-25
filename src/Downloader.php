@@ -6,7 +6,7 @@
 namespace Slince\Spider;
 
 use GuzzleHttp\Client;
-use Slince\Spider\Asset\Asset;
+use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\Exception\RuntimeException;
 
 class Downloader
@@ -23,16 +23,14 @@ class Downloader
 
     /**
      * @param Url $url
-     * @return Asset
+     * @return AssetInterface
      */
     public function download(Url $url)
     {
         $response = $this->client->get($url);
         $url->setParameter('response', $response);
         if ($response->getStatusCode() == '200') {
-            $contentTypeString = $response->getHeaderLine('Content-type');
-            $contentType = trim(strstr($contentTypeString, ';', true));
-            return Asset::create($url, $response->getBody(), $contentType);
+            return AssetFactory::createFromPsr7Response($response, $url);
         }
         throw new RuntimeException("Download failed");
     }

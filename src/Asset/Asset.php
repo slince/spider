@@ -86,7 +86,7 @@ class Asset implements AssetInterface
     {
         $this->contentType = $contentType;
     }
-    
+
     /**
      * {@inheritdoc}
      */

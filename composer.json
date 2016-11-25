@@ -18,14 +18,11 @@
         "bupt1987/html-parser": "~3.0",
         "symfony/filesystem": "~3.0",
         "symfony/console": "~3.0",
-        "cakephp/database": "^3.2"
+        "hoa/mime": "~3.0"
     },
     "autoload": {
         "psr-4": {
             "Slince\\Spider\\": "./src"
         }
-    },
-    "suggest": {
-        "cakephp/database": "Require this if you decide to record url into database"
     }
 }

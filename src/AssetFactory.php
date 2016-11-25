@@ -5,7 +5,10 @@
  */
 namespace Slince\Spider;
 
+use GuzzleHttp\Psr7\Response;
+use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\Exception\InvalidArgumentException;
+use Hoa\Mime\Mime;
 
 class AssetFactory
 {
@@ -45,7 +48,7 @@ class AssetFactory
      * @param Url $url
      * @param $content
      * @param $contentType
-     * @return mixed
+     * @return AssetInterface
      */
     public static function create(Url $url, $content, $contentType)
     {
@@ -63,5 +66,33 @@ class AssetFactory
             $assetClass = $assetClasses[$contentType];
         }
         return new $assetClass($url, $content, $contentType);
+    }
+
+    /**
+     * 从http响应创建资源
+     * @param Response $response
+     * @param Url $url
+     * @return AssetInterface
+     */
+    public static function createFromPsr7Response(Response $response, Url $url)
+    {
+        $contentType = static::getAssetContentType($url, $response);
+        return static::create($url, $response->getBody(), $contentType);
+    }
+
+    /**
+     * 计算内容类型
+     * @param Url $url
+     * @param Response $response
+     * @return string
+     */
+    protected static function getAssetContentType(Url $url, Response $response)
+    {
+        $contentTypeString = $response->getHeaderLine('Content-type');
+        $contentType = trim(strstr($contentTypeString, ';', true));
+        if (!$contentType) {
+            $contentType = Mime::getMimeFromExtension(pathinfo($url, PATHINFO_EXTENSION));
+        }
+        return $contentType;
     }
 }

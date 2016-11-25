@@ -26,4 +26,10 @@ interface AssetInterface
      * @return string
      */
     public function getContentType();
+
+    /**
+     * 获取支持的资源类型
+     * @return array
+     */
+    public static function getSupportedMimeTypes();
 }

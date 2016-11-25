@@ -7,10 +7,10 @@ namespace Slince\Spider;
 
 use GuzzleHttp\Client;
 use Slince\Spider\Asset\Asset;
+use Slince\Spider\Exception\RuntimeException;
 
 class Downloader
 {
-
     /**
      * @var Client
      */
@@ -34,7 +34,7 @@ class Downloader
             $contentType = trim(strstr($contentTypeString, ';', true));
             return Asset::create($url, $response->getBody(), $contentType);
         }
-        return false;
+        throw new RuntimeException("Download failed");
     }
 
     /**

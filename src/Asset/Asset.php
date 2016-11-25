@@ -10,25 +10,6 @@ use Slince\Spider\Url;
 class Asset implements AssetInterface
 {
     /**
-     * 支持的资源类型
-     * @var array
-     */
-    static $supportedAsset = [
-        'Slince\Spider\Asset\Html',
-        'Slince\Spider\Asset\Image',
-        'Slince\Spider\Asset\Css',
-        'Slince\Spider\Asset\Script',
-        'Slince\Spider\Asset\Pdf',
-        'Slince\Spider\Asset\Text',
-    ];
-
-    /**
-     * 默认资源
-     * @var string
-     */
-    static $defaultAsset = 'Slince\Spider\Asset\Unknown';
-
-    /**
      * 支持的mime type
      * @var array
      */
@@ -164,33 +145,8 @@ class Asset implements AssetInterface
      * 获取支持的文件类型
      * @return array
      */
-    static function getSupportedMimeTypes()
+    public static function getSupportedMimeTypes()
     {
         return static::$supportedMimeTypes;
-    }
-
-    /**
-     * 创建资源
-     * @param Url $url
-     * @param $content
-     * @param $contentType
-     * @return mixed
-     */
-    static function create(Url $url, $content, $contentType)
-    {
-        static $assetClasses = [];
-        if (!isset($assetClasses[$contentType])) {
-            foreach (self::$supportedAsset as $asset) {
-                if (in_array($contentType, call_user_func([$asset, 'getSupportedMimeTypes']))) {
-                    $assetClasses[$contentType] = $asset;
-                }
-            }
-        }
-        if (!isset($assetClasses[$contentType])) {
-            $assetClass = self::$defaultAsset;
-        } else {
-            $assetClass = $assetClasses[$contentType];
-        }
-        return new $assetClass($url, $content, $contentType);
     }
 }

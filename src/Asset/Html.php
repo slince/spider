@@ -112,7 +112,7 @@ class Html extends Asset
     protected function extractCssUrls($content)
     {
         static::getDomParser()->load($content);
-        $cssNodes = static::getDomParser()->find("link[rel='stylesheet']");
+        $cssNodes = static::getDomParser()->find("link");
         return array_map(function ($cssNode) {
             return $cssNode->getAttr('href');
         }, $cssNodes);

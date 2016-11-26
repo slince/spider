@@ -139,7 +139,8 @@ class Asset implements AssetInterface
             } else {
                 $pathname = $rawUrl;
             }
-            $newRawUrl = $this->url->getOrigin() . $pathname;;
+            $newRawUrl = $this->url->getOrigin() . $pathname;
+            ;
         }
         $url = Url::createFromUrl($newRawUrl);
         $url->setRawUrl($rawUrl);

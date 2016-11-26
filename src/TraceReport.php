@@ -39,7 +39,7 @@ class TraceReport
      */
     protected static function getHostStorage($host)
     {
-        if (!isset(static::$reports[$host])){
+        if (!isset(static::$reports[$host])) {
             static::$reports[$host] = new SplObjectStorage();
         }
         return static::$reports[$host];

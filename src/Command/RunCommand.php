@@ -64,7 +64,7 @@ class RunCommand extends Command
     /**
      * Prepare before run
      */
-    protected  function prepare()
+    protected function prepare()
     {
         $handler = Factory::createHandler($this->configs['handler']['type'], $this->configs['handler']['config']);
         $this->getSpider()->pushHandler($handler);
@@ -78,7 +78,7 @@ class RunCommand extends Command
      */
     protected function bindEventsForUi(Spider $spider, OutputInterface $output)
     {
-        $spider->getDispatcher()->bind(Spider::EVENT_CAPTURE_URL, function (Event $event) use ($output){
+        $spider->getDispatcher()->bind(Spider::EVENT_CAPTURE_URL, function (Event $event) use ($output) {
             $images = $event->getArgument('images');
             $progressBar = new ProgressBar($output, count($images));
             $output->writeln("Magic Hand started and will be performed {$progressBar->getMaxSteps()} images");
@@ -87,11 +87,11 @@ class RunCommand extends Command
             $this->progressBar = $progressBar;
         });
 
-        $spider->getDispatcher()->bind(Spider::EVENT_PROCESS, function (Event $event) use ($output){
+        $spider->getDispatcher()->bind(Spider::EVENT_PROCESS, function (Event $event) use ($output) {
             $this->progressBar->advance(1);
         });
 
-        $spider->getDispatcher()->bind(Spider::EVENT_END, function (Event $event) use ($output){
+        $spider->getDispatcher()->bind(Spider::EVENT_END, function (Event $event) use ($output) {
             $this->progressBar->finish();
             $output->writeln(PHP_EOL);
             $output->writeln("Work ok");

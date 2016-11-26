@@ -85,7 +85,7 @@ class Html extends Asset
     {
         self::getDomParser()->load($content);
         $aNodes = self::getDomParser()->find('a');
-        return array_map(function($aNode){
+        return array_map(function ($aNode) {
             return $aNode->getAttr('href');
         }, $aNodes);
     }
@@ -99,7 +99,7 @@ class Html extends Asset
     {
         self::getDomParser()->load($content);
         $imgNodes = self::getDomParser()->find('img');
-        return array_map(function($imgNode){
+        return array_map(function ($imgNode) {
             return $imgNode->getAttr('src');
         }, $imgNodes);
     }
@@ -113,7 +113,7 @@ class Html extends Asset
     {
         self::getDomParser()->load($content);
         $cssNodes = self::getDomParser()->find("link[rel='stylesheet']");
-        return array_map(function($cssNode){
+        return array_map(function ($cssNode) {
             return $cssNode->getAttr('href');
         }, $cssNodes);
     }
@@ -127,7 +127,7 @@ class Html extends Asset
     {
         self::getDomParser()->load($content);
         $scriptNodes = self::getDomParser()->find('script');
-        return array_map(function($scriptNode){
+        return array_map(function ($scriptNode) {
             return $scriptNode->getAttr('src');
         }, $scriptNodes);
     }

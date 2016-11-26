@@ -1,5 +1,5 @@
 {
-    "entrance": "http://www.shein.com",
+    "entrance": "http://www.domain.com",
     "filters": {
         "url": {
             "whitUrlPatterns": [
@@ -8,15 +8,6 @@
             "blackPatterns": [
 
             ]
-        }
-    },
-    "handler": {
-        "type": "database",
-        "config": {
-            "host": "127.0.0.1",
-            "database": "spider",
-            "username": "root",
-            "password": ""
         }
     }
 }

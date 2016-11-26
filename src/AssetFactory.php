@@ -48,9 +48,10 @@ class AssetFactory
      * @param Url $url
      * @param $content
      * @param $contentType
+     * @param $extension
      * @return AssetInterface
      */
-    public static function create(Url $url, $content, $contentType)
+    public static function create(Url $url, $content, $contentType, $extension)
     {
         static $assetClasses = [];
         if (!isset($assetClasses[$contentType])) {
@@ -65,7 +66,7 @@ class AssetFactory
         } else {
             $assetClass = $assetClasses[$contentType];
         }
-        return new $assetClass($url, $content, $contentType);
+        return new $assetClass($url, $content, $contentType, $extension);
     }
 
     /**
@@ -76,8 +77,8 @@ class AssetFactory
      */
     public static function createFromPsr7Response(Response $response, Url $url)
     {
-        $contentType = static::getAssetContentType($url, $response);
-        return static::create($url, $response->getBody(), $contentType);
+        list($contentType, $extension) = static::getAssetContentTypeAndExtension($url, $response);
+        return static::create($url, $response->getBody(), $contentType, $extension);
     }
 
     /**
@@ -86,13 +87,20 @@ class AssetFactory
      * @param Response $response
      * @return string
      */
-    protected static function getAssetContentType(Url $url, Response $response)
+    protected static function getAssetContentTypeAndExtension(Url $url, Response $response)
     {
         $contentTypeString = $response->getHeaderLine('Content-type');
         $contentType = trim(strstr($contentTypeString, ';', true));
+        $extension = '';
         if (!$contentType) {
-            $contentType = Mime::getMimeFromExtension(pathinfo($url, PATHINFO_EXTENSION));
+            $extension = pathinfo($url, PATHINFO_EXTENSION);
+            if ($extension) {
+                $contentType = Mime::getMimeFromExtension($extension);
+            } else {
+                $extension = 'html';
+                $contentType = 'text/html';
+            }
         }
-        return $contentType;
+        return [$contentType, $extension];
     }
 }

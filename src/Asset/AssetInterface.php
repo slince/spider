@@ -28,6 +28,12 @@ interface AssetInterface
     public function getContentType();
 
     /**
+     * 获取扩展名
+     * @return string
+     */
+    public function getExtension();
+
+    /**
      * 获取子资源url
      * @return Url[]
      */

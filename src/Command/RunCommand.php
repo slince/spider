@@ -7,6 +7,7 @@ namespace Slince\Spider\Command;
 
 use Slince\Config\Config;
 use Slince\Event\Event;
+use Slince\Spider\EventStore;
 use Slince\Spider\Factory;
 use Slince\Spider\Spider;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -66,9 +67,7 @@ class RunCommand extends Command
      */
     protected function prepare()
     {
-        $handler = Factory::createHandler($this->configs['handler']['type'], $this->configs['handler']['config']);
-        $this->getSpider()->pushHandler($handler);
-//        $this->bindEventsForUi($this->getSpider(), $this->output);
+        $this->bindEventsForUi($this->getSpider(), $this->output);
     }
 
     /**
@@ -78,7 +77,7 @@ class RunCommand extends Command
      */
     protected function bindEventsForUi(Spider $spider, OutputInterface $output)
     {
-        $spider->getDispatcher()->bind(Spider::EVENT_CAPTURE_URL, function (Event $event) use ($output) {
+        $spider->getDispatcher()->bind(EventStore::COLLECTED_URL, function (Event $event) use ($output) {
             $images = $event->getArgument('images');
             $progressBar = new ProgressBar($output, count($images));
             $output->writeln("Magic Hand started and will be performed {$progressBar->getMaxSteps()} images");

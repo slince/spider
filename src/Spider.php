@@ -67,6 +67,14 @@ class Spider
     }
 
     /**
+     * @param $blackUrlPatterns
+     */
+    public function appendBlackUrlPatterns($blackUrlPatterns)
+    {
+        $this->blackUrlPatterns = array_merge($this->blackUrlPatterns, $blackUrlPatterns);
+    }
+
+    /**
      * @return array
      */
     public function getBlackUrlPatterns()
@@ -80,6 +88,14 @@ class Spider
     public function setWhiteUrlPatterns($whiteUrlPatterns)
     {
         $this->whiteUrlPatterns = $whiteUrlPatterns;
+    }
+
+    /**
+     * @param $whiteUrlPatterns
+     */
+    public function appendWhiteUrlPatterns($whiteUrlPatterns)
+    {
+        $this->whiteUrlPatterns = array_merge($this->whiteUrlPatterns, $whiteUrlPatterns);
     }
 
     /**

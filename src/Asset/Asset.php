@@ -5,6 +5,7 @@
  */
 namespace Slince\Spider\Asset;
 
+use Hoa\Mime\Mime;
 use Slince\Spider\Url;
 
 class Asset implements AssetInterface
@@ -30,13 +31,22 @@ class Asset implements AssetInterface
      */
     protected $contentType;
 
-    public function __construct(Url $url, $content, $contentType)
+    /**
+     * @var string
+     */
+    protected $extension;
+
+    public function __construct(Url $url, $content, $contentType, $extension = null)
     {
         $this->url = $url;
         $this->contentType = $contentType;
         if (!empty($content)) {
             $this->setContent($content);
         }
+        if (is_null($extension)) {
+            $extension = Mime::getExtensionsFromMime($contentType);
+        }
+        $this->extension = $extension;
     }
 
     /**
@@ -85,6 +95,19 @@ class Asset implements AssetInterface
     public function setContentType($contentType)
     {
         $this->contentType = $contentType;
+    }
+
+    public function getExtension()
+    {
+        return $this->extension;
+    }
+
+    /**
+     * @param string $extension
+     */
+    public function setExtension($extension)
+    {
+        $this->extension = $extension;
     }
 
     /**

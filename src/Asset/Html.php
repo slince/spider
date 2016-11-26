@@ -47,10 +47,10 @@ class Html extends Asset
     public function setContent($content)
     {
         parent::setContent($content);
-        self::getDomParser()->load($content);
-        $titleDom = self::getDomParser()->find('title', 0);
-        $keywordsDom = self::getDomParser()->find("meta[name=keywords]", 0);
-        $descriptionDom = self::getDomParser()->find("meta[name=description]", 0);
+        static::getDomParser()->load($content);
+        $titleDom = static::getDomParser()->find('title', 0);
+        $keywordsDom = static::getDomParser()->find("meta[name=keywords]", 0);
+        $descriptionDom = static::getDomParser()->find("meta[name=description]", 0);
         if ($titleDom !== false) {
             $this->title = $titleDom->getPlainText();
         }
@@ -83,8 +83,8 @@ class Html extends Asset
      */
     protected function extractPageUrls($content)
     {
-        self::getDomParser()->load($content);
-        $aNodes = self::getDomParser()->find('a');
+        static::getDomParser()->load($content);
+        $aNodes = static::getDomParser()->find('a');
         return array_map(function ($aNode) {
             return $aNode->getAttr('href');
         }, $aNodes);
@@ -97,8 +97,8 @@ class Html extends Asset
      */
     protected function extractImageUrls($content)
     {
-        self::getDomParser()->load($content);
-        $imgNodes = self::getDomParser()->find('img');
+        static::getDomParser()->load($content);
+        $imgNodes = static::getDomParser()->find('img');
         return array_map(function ($imgNode) {
             return $imgNode->getAttr('src');
         }, $imgNodes);
@@ -111,8 +111,8 @@ class Html extends Asset
      */
     protected function extractCssUrls($content)
     {
-        self::getDomParser()->load($content);
-        $cssNodes = self::getDomParser()->find("link[rel='stylesheet']");
+        static::getDomParser()->load($content);
+        $cssNodes = static::getDomParser()->find("link[rel='stylesheet']");
         return array_map(function ($cssNode) {
             return $cssNode->getAttr('href');
         }, $cssNodes);
@@ -125,8 +125,8 @@ class Html extends Asset
      */
     protected function extractScriptUrls($content)
     {
-        self::getDomParser()->load($content);
-        $scriptNodes = self::getDomParser()->find('script');
+        static::getDomParser()->load($content);
+        $scriptNodes = static::getDomParser()->find('script');
         return array_map(function ($scriptNode) {
             return $scriptNode->getAttr('src');
         }, $scriptNodes);
@@ -137,9 +137,9 @@ class Html extends Asset
      */
     protected static function getDomParser()
     {
-        if (is_null(self::$domParser)) {
-            self::$domParser = new ParserDom();
+        if (is_null(static::$domParser)) {
+            static::$domParser = new ParserDom();
         }
-        return self::$domParser;
+        return static::$domParser;
     }
 }

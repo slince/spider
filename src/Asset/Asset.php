@@ -32,8 +32,8 @@ class Asset implements AssetInterface
 
     public function __construct(Url $url, $content, $contentType)
     {
-        $this->setUrl($url);
-        $this->setContentType($contentType);
+        $this->url = $url;
+        $this->contentType = $contentType;
         if (!empty($content)) {
             $this->setContent($content);
         }

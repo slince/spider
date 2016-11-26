@@ -17,4 +17,12 @@ class Pdf extends Asset
     {
         return [];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isBinary()
+    {
+        return true;
+    }
 }

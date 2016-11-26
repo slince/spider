@@ -28,7 +28,7 @@ class FilterUrlEvent extends Event
      */
     protected $isSkipped;
 
-    public function __construct(Url $url, $subject = null, array $arguments = [])
+    public function __construct(Url $url, $subject, array $arguments = [])
     {
         $this->url = $url;
         parent::__construct(static::NAME, $subject, $arguments);

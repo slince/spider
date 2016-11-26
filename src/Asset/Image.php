@@ -12,6 +12,9 @@ class Image extends Asset
         'image/svg+xml', 'image/x-icon',
     ];
 
+    /**
+     * {@inheritdoc}
+     */
     public function isBinary()
     {
         return true;

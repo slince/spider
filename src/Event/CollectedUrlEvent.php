@@ -29,7 +29,7 @@ class CollectedUrlEvent extends Event
      */
     protected $asset;
 
-    public function __construct(Url $url, AssetInterface $asset, $subject = null, array $arguments = [])
+    public function __construct(Url $url, AssetInterface $asset, $subject, array $arguments = [])
     {
         $this->url = $url;
         $this->asset = $asset;

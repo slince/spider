@@ -50,7 +50,7 @@ class Spider
      * 垃圾链接规则
      * @var string
      */
-    protected static $junkUrlPattern = '/^\s*(?:#|mailto|javascript)/';
+    protected static $junkUrlPattern = '/^(?:#|mailto|javascript):/';
 
     public function __construct()
     {
@@ -128,7 +128,7 @@ class Spider
             return false;
         }
         $filterUrlEvent = new FilterUrlEvent($url, $this);
-        $this->dispatcher->dispatch(EventStore::FILTERED_URL, new FilterUrlEvent($url, $this));
+        $this->dispatcher->dispatch(EventStore::FILTER_URL, new FilterUrlEvent($url, $this));
         return !$filterUrlEvent->isSkipped();
     }
 
@@ -155,14 +155,9 @@ class Spider
     protected function processUrl(Url $url)
     {
         if ($this->filterUrl($url)) {
-            $this->dispatcher->dispatch(EventStore::CAPTURE_URL, new Event(EventStore::CAPTURED_URL, $this, [
-                'url' => $url
-            ]));
+            $this->dispatcher->dispatch(EventStore::COLLECT_URL, new CollectUrlEvent($url, $this));
             $asset = $this->downloader->download($url);
-            $this->dispatcher->dispatch(EventStore::CAPTURED_URL, new Event(EventStore::CAPTURED_URL, $this, [
-                'url' => $url,
-                'asset' => $asset
-            ]));
+            $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUrlEvent($url, $asset, $this));
             $this->assets[] = $asset;
             TraceReport::report($url);
             if (!$asset->isBinary()) {

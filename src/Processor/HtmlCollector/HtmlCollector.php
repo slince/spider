@@ -42,8 +42,9 @@ class HtmlCollector extends Processor
      */
     protected $filesystem;
 
-    public function __construct($savePath, $allowHosts = [], $pageUrlPatterns = [])
+    public function __construct(Spider $spider, $savePath, $allowHosts = [], $pageUrlPatterns = [])
     {
+        parent::__construct($spider);
         $this->savePath = $savePath;
         $this->allowHosts = $allowHosts;
         $this->pageUrlPatterns = $pageUrlPatterns;
@@ -56,6 +57,14 @@ class HtmlCollector extends Processor
     public function getFilesystem()
     {
         return $this->filesystem;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function mount()
+    {
+        $this->getSpider()->getDispatcher()->addSubscriber(new Subscriber());
     }
 
     protected function resolveAllowHosts($allowHosts)

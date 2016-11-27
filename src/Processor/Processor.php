@@ -7,12 +7,20 @@ namespace Slince\Spider\Processor;
 
 use Slince\Spider\Spider;
 
-class Processor
+abstract class Processor
 {
     /**
      * @var Spider
      */
     protected $spider;
+
+    /**
+     * @param Spider $spider
+     */
+    public function setSpider($spider)
+    {
+        $this->spider = $spider;
+    }
 
     /**
      * @return Spider
@@ -21,4 +29,15 @@ class Processor
     {
         return $this->spider;
     }
+
+    public function __construct(Spider $spider)
+    {
+        $this->spider = $spider;
+    }
+
+    /**
+     * 挂载当前处理器
+     * @return mixed
+     */
+    abstract public function mount();
 }

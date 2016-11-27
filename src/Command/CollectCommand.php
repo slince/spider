@@ -17,29 +17,18 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
-class RunCommand extends Command
+class CollectCommand extends Command
 {
     /**
      * 命令名称
      * @var string
      */
-    const COMMAND_NAME = 'run';
+    const COMMAND_NAME = 'cllect';
     
     /**
      * @var ProgressBar
      */
     protected $progressBar;
-
-    /**
-     * @var Config
-     */
-    protected $configs;
-
-    public function initialize(InputInterface $input, OutputInterface $output)
-    {
-        parent::initialize($input, $output);
-        $this->configs = new Config();
-    }
 
     public function configure()
     {
@@ -54,12 +43,7 @@ class RunCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $configFile = getcwd() . '/spider.json';
-        $this->configs->load($configFile);
-        $spider = new Spider();
-        $this->setSpider($spider);
-        $this->prepare();
-        $spider->run($this->configs->get('entrance'));
+        $this->getSpider()->run($this->configs->get('entrance'));
     }
 
     /**

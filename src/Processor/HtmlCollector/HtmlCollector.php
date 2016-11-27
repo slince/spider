@@ -6,6 +6,7 @@
 namespace Slince\Spider\Processor\HtmlCollector;
 
 use Slince\Spider\Asset\Asset;
+use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\Processor\Processor;
 use Slince\Spider\Spider;
 use Symfony\Component\Filesystem\Filesystem;
@@ -49,6 +50,14 @@ class HtmlCollector extends Processor
         $this->filesystem = new Filesystem();
     }
 
+    /**
+     * @return Filesystem
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
+    }
+
     protected function resolveAllowHosts($allowHosts)
     {
         $spider = $this->getSpider();
@@ -88,28 +97,39 @@ class HtmlCollector extends Processor
 
     /**
      * 生成文件名
-     * @param Asset $asset
+     * @param AssetInterface $asset
      * @return string
      */
-    public function generateFileName(Asset $asset)
+    public function generateFileName(AssetInterface $asset)
     {
         $basePath = rtrim($this->getSavePath() . DIRECTORY_SEPARATOR . $asset->getUrl()->getPath(), '\\/');
         $extension = $asset->getExtension();
         return $basePath . $this->getFilename($asset, $basePath) . ".{$extension}";
     }
 
-    protected function getFilename(Asset $asset, $basePath)
+    /**
+     * 获取基本文件名
+     * @param AssetInterface $asset
+     * @param $basePath
+     * @return string
+     */
+    protected function getFilename(AssetInterface $asset, $basePath)
     {
-        $filename = pathinfo($asset->getUrl()->getUrlString(), PATHINFO_FILENAME);
-        if (!$filename) {
-            $unavailable = true;
-            $index = 0;
-            while ($unavailable) {
-                $filename = "/index{$index}.html";
-                if (!$this->filesystem->exists($basePath . $filename)) {
-                    $unavailable = false;
-                } else {
-                    $index ++;
+        //如果是符合正则页面的资源，使用配置的页面
+        if ($pageUrlPattern = $asset->getUrl()->getParameter('pageUrlPattern')) {
+            $filename = $this->pageUrlPatterns[$pageUrlPattern];
+        } else {
+            $filename = pathinfo($asset->getUrl()->getUrlString(), PATHINFO_FILENAME);
+            if (!$filename) {
+                $unavailable = true;
+                $index = 0;
+                while ($unavailable) {
+                    $filename = "/index{$index}.html";
+                    if (!$this->filesystem->exists($basePath . $filename)) {
+                        $unavailable = false;
+                    } else {
+                        $index++;
+                    }
                 }
             }
         }

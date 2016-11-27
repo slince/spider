@@ -22,10 +22,15 @@ class Subscriber implements SubscriberInterface
     public function getEvents()
     {
         return [
-            EventStore::FILTER_URL => 'onFilterUrl'
+            EventStore::FILTER_URL => 'onFilterUrl',
+            EventStore::COLLECTED_URL => 'onCollectedUrl',
         ];
     }
 
+    /**
+     * 过滤链接事件
+     * @param FilterUrlEvent $event
+     */
     public function onFilterUrl(FilterUrlEvent $event)
     {
         $url = $event->getUrl();
@@ -42,24 +47,39 @@ class Subscriber implements SubscriberInterface
         }
     }
 
+    /**
+     * 采集完毕
+     * @param CollectedUrlEvent $event
+     */
     public function onCollectedUrl(CollectedUrlEvent $event)
     {
-        $url = $event->getUrl();
         $asset = $event->getAsset();
-
+        $this->htmlCollector->getFilesystem()->dumpFile($this->htmlCollector->generateFileName($asset), $asset->getContent());
     }
 
 
+    /**
+     * 生成host验证规则
+     * @param $allowHosts
+     * @return string
+     */
     protected function makeAllowHostsPattern($allowHosts)
     {
         return '#(' . implode('|', $allowHosts) . ')#';
     }
 
+    /**
+     * 检查是否符合页面正则
+     * @param Url $url
+     * @return bool
+     */
     protected function checkPageUrlPatterns(Url $url)
     {
         $result = true;
         foreach ($this->htmlCollector->getPageUrlPatterns() as $urlPattern) {
             if (preg_match($urlPattern, $url->getUrlString())) {
+                //设置模式
+                $url->setParameter('pageUrlPattern', $urlPattern);
                 if ($this->htmlCollector->getPageUrlDownloadTime($urlPattern)   ) {
                     $result = false;
                     break;

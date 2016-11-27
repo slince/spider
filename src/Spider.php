@@ -136,11 +136,11 @@ class Spider
             return false;
         }
         //如果是白名单规则一定通过
-        if ($this->checkedUrlPatterns($url->getRawUrl(), $this->whiteUrlPatterns)) {
+        if ($this->checkUrlPatterns($url->getRawUrl(), $this->whiteUrlPatterns)) {
             return true;
         }
         //如果符合黑名单规则直接据掉
-        if ($this->checkedUrlPatterns($url->getRawUrl(), $this->blackUrlPatterns)) {
+        if ($this->checkUrlPatterns($url->getRawUrl(), $this->blackUrlPatterns)) {
             return false;
         }
         $filterUrlEvent = new FilterUrlEvent($url, $this);
@@ -154,7 +154,7 @@ class Spider
      * @param array $patterns
      * @return bool
      */
-    protected function checkedUrlPatterns($url, array $patterns)
+    protected function checkUrlPatterns($url, array $patterns)
     {
         foreach ($patterns as $pattern) {
             if (preg_match($pattern, $url)) {

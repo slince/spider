@@ -5,11 +5,11 @@
  */
 namespace Slince\Spider\Processor\HtmlCollector;
 
-use Slince\Event\SubscriberInterface;
-use Slince\Spider\CollectedUrlEvent;
-use Slince\Spider\EventStore;
-use Slince\Spider\FilterUrlEvent;
 use Slince\Spider\Url;
+use Slince\Event\SubscriberInterface;
+use Slince\Spider\Event\CollectedUrlEvent;
+use Slince\Spider\EventStore;
+use Slince\Spider\Event\FilterUrlEvent;
 
 class Subscriber implements SubscriberInterface
 {

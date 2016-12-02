@@ -66,6 +66,7 @@ class CollectCommand extends Command
         $allowHosts = isset($collectorConfigs['allowHosts']) ? $collectorConfigs['allowHosts'] : [];
         $pageUrlPatterns = isset($collectorConfigs['pageUrlPatterns']) ? $collectorConfigs['pageUrlPatterns'] : [];
         $this->htmlCollector = new HtmlCollector($this->getSpider(), $savePath, $allowHosts, $pageUrlPatterns);
+        $this->htmlCollector->mount(); //挂载到蜘蛛上
         $this->bindEventsForUi();
     }
 
@@ -79,7 +80,7 @@ class CollectCommand extends Command
         $dispatcher->bind(EventStore::COLLECT_URL, function(CollectUrlEvent $event){
             $url = $event->getUrl();
             $this->output->writeln(PHP_EOL);
-            $this->output->writeln($url);
+            $this->output->writeln(strval($url));
             $progressBar = new ProgressBar($this->output, 100);
             $progressBar->start();
             //临时存储该链接对应的进度条

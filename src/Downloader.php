@@ -27,7 +27,7 @@ class Downloader
      */
     public function download(Url $url)
     {
-        $response = $this->client->get($url);
+        $response = $this->client->get($url->getUrlString());
         $url->setParameter('response', $response);
         if ($response->getStatusCode() == '200') {
             return AssetFactory::createFromPsr7Response($response, $url);

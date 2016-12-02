@@ -5,21 +5,15 @@
  */
 namespace Slince\Spider\Command;
 
-use Slince\Config\Config;
-use Slince\Event\Event;
-use Slince\Spider\CollectedUrlEvent;
-use Slince\Spider\CollectUrlEvent;
+use Slince\Spider\Event\CollectedUrlEvent;
+use Slince\Spider\Event\CollectUrlEvent;
 use Slince\Spider\EventStore;
 use Slince\Spider\Exception\InvalidArgumentException;
 use Slince\Spider\Processor\HtmlCollector\HtmlCollector;
-use Slince\Spider\Spider;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
 
 class CollectCommand extends Command
 {

@@ -6,9 +6,10 @@
 namespace Slince\Spider;
 
 use Slince\Event\Dispatcher;
-use Slince\Event\Event;
 use Slince\Spider\Asset\Asset;
-use Slince\Spider\Handler\HandlerInterface;
+use Slince\Spider\Event\FilterUrlEvent;
+use Slince\Spider\Event\CollectUrlEvent;
+use Slince\Spider\Event\CollectedUrlEvent;
 
 class Spider
 {

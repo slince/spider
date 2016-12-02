@@ -3,11 +3,12 @@
  * slince spider library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Slince\Spider;
+namespace Slince\Spider\Event;
 
 use Slince\Event\Event;
 use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\EventStore;
+use Slince\Spider\Url;
 
 class CollectedUrlEvent extends Event
 {

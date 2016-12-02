@@ -47,6 +47,7 @@ class Command extends BaseCommand
                 throw new InvalidArgumentException("Config File [{$configFile}] format error!");
             }
         }
+        $this->resolveSpiderFilter();
     }
 
     /**
@@ -63,5 +64,21 @@ class Command extends BaseCommand
     public function setSpider($spider)
     {
         $this->spider = $spider;
+    }
+
+    /**
+     * 处理蜘蛛默认的过滤器
+     */
+    protected function resolveSpiderFilter()
+    {
+        if (isset($this->configs['filters']['url'])) {
+            $filters = $this->configs['filters']['url'];
+            if (isset($filters['whitUrlPatterns'])) {
+                $this->getSpider()->setWhiteUrlPatterns($filters['whitUrlPatterns']);
+            }
+            if (isset($filters['blackPatterns'])) {
+                $this->getSpider()->setBlackUrlPatterns($filters['blackPatterns']);
+            }
+        }
     }
 }

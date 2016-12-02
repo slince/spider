@@ -67,9 +67,10 @@ class CollectCommand extends Command
      */
     protected function prepareCollect()
     {
-        $savePath = $this->configs->get('savePath');
-        $allowHosts = $this->configs->get('allowHosts', []);
-        $pageUrlPatterns = $this->configs->get('pageUrlPatterns', []);
+        $collectorConfigs = $this->configs->get('collector');
+        $savePath = isset($collectorConfigs['savePath']) ? $collectorConfigs['savePath'] : getcwd();
+        $allowHosts = isset($collectorConfigs['allowHosts']) ? $collectorConfigs['allowHosts'] : [];
+        $pageUrlPatterns = isset($collectorConfigs['pageUrlPatterns']) ? $collectorConfigs['pageUrlPatterns'] : [];
         $this->htmlCollector = new HtmlCollector($this->getSpider(), $savePath, $allowHosts, $pageUrlPatterns);
         $this->bindEventsForUi();
     }

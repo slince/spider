@@ -9,5 +9,8 @@
 
             ]
         }
+    },
+    "collector": {
+        "savePath": "./assets"
     }
 }

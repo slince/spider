@@ -5,7 +5,7 @@
  */
 namespace Slince\Spider;
 
-use Slince\Spider\Command\RunCommand;
+use Slince\Spider\Command\CollectCommand;
 use Symfony\Component\Console\Application;
 
 class CommandUI
@@ -17,7 +17,7 @@ class CommandUI
     static function createCommands()
     {
         return [
-            new RunCommand(),
+            new CollectCommand(),
         ];
     }
 

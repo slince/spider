@@ -29,6 +29,10 @@ class HtmlCollector extends Processor
      */
     protected $pageUrlPatterns = [];
 
+    /**
+     * 页面正则下载次数
+     * @var array
+     */
     protected $pageUrlPatternDownloadTimes = [];
 
     /**
@@ -64,15 +68,7 @@ class HtmlCollector extends Processor
      */
     public function mount()
     {
-        $this->getSpider()->getDispatcher()->addSubscriber(new Subscriber());
-    }
-
-    protected function resolveAllowHosts($allowHosts)
-    {
-        $spider = $this->getSpider();
-        $spider->setBlackUrlPatterns(array_map(function($host){
-            return "#{$host}#";
-        }, $allowHosts));
+        $this->getSpider()->getDispatcher()->addSubscriber(new Subscriber($this));
     }
 
     /**
@@ -91,6 +87,11 @@ class HtmlCollector extends Processor
         return $this->pageUrlPatterns;
     }
 
+    /**
+     * 获取某个页面正则已经  下载的次数
+     * @param $pageUrlPattern
+     * @return int|mixed
+     */
     public function getPageUrlDownloadTime($pageUrlPattern)
     {
         return isset($this->pageUrlPatternDownloadTimes[$pageUrlPattern]) ? $this->pageUrlPatternDownloadTimes[$pageUrlPattern] : 0;

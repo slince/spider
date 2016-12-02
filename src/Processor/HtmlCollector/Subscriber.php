@@ -6,7 +6,6 @@
 namespace Slince\Spider\Processor\HtmlCollector;
 
 use Slince\Event\SubscriberInterface;
-use Slince\Spider\Asset\Asset;
 use Slince\Spider\CollectedUrlEvent;
 use Slince\Spider\EventStore;
 use Slince\Spider\FilterUrlEvent;
@@ -18,6 +17,11 @@ class Subscriber implements SubscriberInterface
      * @var HtmlCollector
      */
     protected $htmlCollector;
+
+    public function __construct(HtmlCollector $htmlCollector)
+    {
+        $this->htmlCollector = $htmlCollector;
+    }
 
     public function getEvents()
     {

@@ -7,11 +7,15 @@ namespace Slince\Spider\Command;
 
 use Slince\Config\Config;
 use Slince\Event\Event;
+use Slince\Spider\CollectedUrlEvent;
+use Slince\Spider\CollectUrlEvent;
 use Slince\Spider\EventStore;
-use Slince\Spider\Factory;
+use Slince\Spider\Exception\InvalidArgumentException;
+use Slince\Spider\Processor\HtmlCollector\HtmlCollector;
 use Slince\Spider\Spider;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,16 +27,23 @@ class CollectCommand extends Command
      * 命令名称
      * @var string
      */
-    const COMMAND_NAME = 'cllect';
+    const COMMAND_NAME = 'collect';
     
     /**
      * @var ProgressBar
      */
     protected $progressBar;
 
+    /**
+     * html采集器
+     * @var HtmlCollector
+     */
+    protected $htmlCollector;
+
     public function configure()
     {
-        $this->setName(static::COMMAND_NAME);
+        $this->setName(static::COMMAND_NAME)
+            ->addArgument('url', InputArgument::OPTIONAL, 'Entrance url,collector will collect from this link');
     }
 
     /**
@@ -43,41 +54,50 @@ class CollectCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getSpider()->run($this->configs->get('entrance'));
+        $this->prepareCollect();
+        $entrance = $this->configs->get('entrance') ?:  $input->getArgument('url');
+        if (empty($entrance)) {
+            throw new InvalidArgumentException("You should enter entrance url");
+        }
+        $this->getSpider()->run($entrance);
     }
 
     /**
      * Prepare before run
      */
-    protected function prepare()
+    protected function prepareCollect()
     {
-        $this->bindEventsForUi($this->getSpider(), $this->output);
+        $savePath = $this->configs->get('savePath');
+        $allowHosts = $this->configs->get('allowHosts', []);
+        $pageUrlPatterns = $this->configs->get('pageUrlPatterns', []);
+        $this->htmlCollector = new HtmlCollector($this->getSpider(), $savePath, $allowHosts, $pageUrlPatterns);
+        $this->bindEventsForUi();
     }
 
     /**
      * Bind Ui
-     * @param Spider $spider
-     * @param OutputInterface $output
      */
-    protected function bindEventsForUi(Spider $spider, OutputInterface $output)
+    protected function bindEventsForUi()
     {
-        $spider->getDispatcher()->bind(EventStore::COLLECTED_URL, function (Event $event) use ($output) {
-            $images = $event->getArgument('images');
-            $progressBar = new ProgressBar($output, count($images));
-            $output->writeln("Magic Hand started and will be performed {$progressBar->getMaxSteps()} images");
-            $output->write(PHP_EOL);
+        $dispatcher = $this->getSpider()->getDispatcher();
+        //开始处理某个链接
+        $dispatcher->bind(EventStore::COLLECT_URL, function(CollectUrlEvent $event){
+            $url = $event->getUrl();
+            $this->output->writeln(PHP_EOL);
+            $this->output->writeln($url);
+            $progressBar = new ProgressBar($this->output, 100);
             $progressBar->start();
-            $this->progressBar = $progressBar;
+            //临时存储该链接对应的进度条
+            $url->setParameter('progressBar', $progressBar);
         });
 
-        $spider->getDispatcher()->bind(Spider::EVENT_PROCESS, function (Event $event) use ($output) {
-            $this->progressBar->advance(1);
-        });
-
-        $spider->getDispatcher()->bind(Spider::EVENT_END, function (Event $event) use ($output) {
-            $this->progressBar->finish();
-            $output->writeln(PHP_EOL);
-            $output->writeln("Work ok");
+        //处理完成
+        $dispatcher->bind(EventStore::COLLECTED_URL, function (CollectedUrlEvent $event){
+            $asset = $event->getAsset();
+            $url = $asset->getUrl();
+            $progressBar = $url->getParameter('progressBar');
+            $progressBar->advance(50);
+            $progressBar->finish();
         });
     }
 }

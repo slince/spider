@@ -41,10 +41,12 @@ class Command extends BaseCommand
         $this->spider = new Spider();
         $this->configs = new Config();
         $configFile = getcwd() . '/spider.json';
-        if (!file_exists($configFile)) {
-            throw new InvalidArgumentException("Config File [{$configFile}] doesn't exists!");
+        if (file_exists($configFile)) {
+            $this->configs->load($configFile);
+            if (count($this->configs) == 0) {
+                throw new InvalidArgumentException("Config File [{$configFile}] format error!");
+            }
         }
-        $this->configs->load($configFile);
     }
 
     /**

@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\Exception\InvalidArgumentException;
 use Hoa\Mime\Mime;
+use Hoa\Mime\Exception\MimeIsNotFound;
 
 class AssetFactory
 {
@@ -89,16 +90,22 @@ class AssetFactory
      */
     protected static function getAssetContentTypeAndExtension(Url $url, Response $response)
     {
-        $contentTypeString = $response->getHeaderLine('Content-type');
-        $contentType = trim(strstr($contentTypeString, ';', true));
-        $extension = '';
+        $contentTypeString = $response->getHeaderLine('content-type');
+        $contentType = strpos($contentTypeString, ';') === false
+            ? trim($contentTypeString) : trim(explode(';', $contentTypeString)[0]);
         if (!$contentType) {
-            $extension = pathinfo($url, PATHINFO_EXTENSION);
+            $extension = pathinfo($url->getPath(), PATHINFO_EXTENSION);
             if ($extension) {
                 $contentType = Mime::getMimeFromExtension($extension);
             } else {
                 $extension = 'html';
                 $contentType = 'text/html';
+            }
+        } else {
+            try{
+                $extension = Mime::getExtensionsFromMime($contentType)[0];
+            } catch (MimeIsNotFound $exception) {
+                $extension = pathinfo($url->getPath(), PATHINFO_EXTENSION);
             }
         }
         return [$contentType, $extension];

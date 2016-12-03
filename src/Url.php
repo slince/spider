@@ -133,6 +133,7 @@ class Url
             ? $this->host : "{$this->host}:{$this->port}";
         return $schemeFragment . $hostFragment;
     }
+
     /**
      * 从url字符串创建
      * @param $url

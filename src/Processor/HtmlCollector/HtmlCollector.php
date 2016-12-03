@@ -49,7 +49,7 @@ class HtmlCollector extends Processor
     public function __construct(Spider $spider, $savePath, $allowHosts = [], $pageUrlPatterns = [])
     {
         parent::__construct($spider);
-        $this->savePath = $savePath;
+        $this->savePath = trim($savePath, '\/') . DIRECTORY_SEPARATOR;
         $this->allowHosts = $allowHosts;
         $this->pageUrlPatterns = $pageUrlPatterns;
         $this->filesystem = new Filesystem();
@@ -112,7 +112,7 @@ class HtmlCollector extends Processor
      */
     public function generateFileName(AssetInterface $asset)
     {
-        $basePath = rtrim($this->getSavePath() . DIRECTORY_SEPARATOR . $asset->getUrl()->getPath(), '\\/');
+        $basePath = rtrim($this->getSavePath() . dirname($asset->getUrl()->getPath()), '\\/') . DIRECTORY_SEPARATOR;
         $extension = $asset->getExtension();
         return $basePath . $this->getFilename($asset, $basePath) . ".{$extension}";
     }
@@ -129,12 +129,12 @@ class HtmlCollector extends Processor
         if ($pageUrlPattern = $asset->getUrl()->getParameter('pageUrlPattern')) {
             $filename = $this->pageUrlPatterns[$pageUrlPattern];
         } else {
-            $filename = pathinfo($asset->getUrl()->getUrlString(), PATHINFO_FILENAME);
+            $filename = pathinfo($asset->getUrl()->getPath(), PATHINFO_FILENAME);
             if (!$filename) {
                 $unavailable = true;
                 $index = 0;
                 while ($unavailable) {
-                    $filename = "/index{$index}.html";
+                    $filename = "/index{$index}";
                     if (!$this->filesystem->exists($basePath . $filename)) {
                         $unavailable = false;
                     } else {

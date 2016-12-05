@@ -84,7 +84,7 @@ class Subscriber implements SubscriberInterface
             if (preg_match($urlPattern, $url->getUrlString())) {
                 //设置模式
                 $url->setParameter('pageUrlPattern', $urlPattern);
-                if ($this->htmlCollector->getPageUrlDownloadTime($urlPattern)   ) {
+                if ($this->htmlCollector->getPageUrlDownloadTime($urlPattern)) {
                     $result = false;
                     break;
                 }

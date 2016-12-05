@@ -1,5 +1,5 @@
 {
-    "entrance": "http://htmlstream.com/preview/unify-v1.9.6/",
+    "entrance": "http://127.0.0.1:8080/",
     "filters": {
         "url": {
             "whitUrlPatterns": [

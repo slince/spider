@@ -114,7 +114,7 @@ class HtmlCollector extends Processor
     {
         $basePath = rtrim($this->getSavePath() . dirname($asset->getUrl()->getPath()), '\\/') . DIRECTORY_SEPARATOR;
         $extension = $asset->getExtension();
-        return $basePath . $this->getFilename($asset, $basePath) . ".{$extension}";
+        return $basePath . $this->getBasename($asset, $basePath);
     }
 
     /**
@@ -123,8 +123,9 @@ class HtmlCollector extends Processor
      * @param $basePath
      * @return string
      */
-    protected function getFilename(AssetInterface $asset, $basePath)
+    protected function getBasename(AssetInterface $asset, $basePath)
     {
+        $extension = $asset->getExtension();
         //如果是符合正则页面的资源，使用配置的页面
         if ($pageUrlPattern = $asset->getUrl()->getParameter('pageUrlPattern')) {
             $filename = $this->pageUrlPatterns[$pageUrlPattern];
@@ -135,7 +136,7 @@ class HtmlCollector extends Processor
                 $index = 0;
                 while ($unavailable) {
                     $filename = "/index{$index}";
-                    if (!$this->filesystem->exists($basePath . $filename)) {
+                    if (!$this->filesystem->exists($basePath . $filename . ".{$extension}")) {
                         $unavailable = false;
                     } else {
                         $index++;
@@ -143,6 +144,6 @@ class HtmlCollector extends Processor
                 }
             }
         }
-        return $filename;
+        return $filename  . ".{$extension}";
     }
 }

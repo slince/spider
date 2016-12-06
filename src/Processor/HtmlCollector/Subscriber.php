@@ -36,8 +36,8 @@ class Subscriber implements SubscriberInterface
      */
     public function onFilterUrl(FilterUrlEvent $event)
     {
-        $url = $event->getUrl();
-        if (!$this->htmlCollector->checkUrlEnabled($url)) {
+        $uri = $event->getUrl();
+        if (!$this->htmlCollector->checkUrlEnabled($uri)) {
             $event->skipThis();
         }
     }

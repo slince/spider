@@ -23,31 +23,31 @@ class TraceReport
 
     /**
      * 记录爬虫访问过的链接
-     * @param Url $url
+     * @param Uri $uri
      */
-    public function report(Url $url)
+    public function report(Uri $uri)
     {
-        $storage = $this->getHostStorage($url->getHost());
-        $storage[static::hash($url)] = $url->getUrlString();
+        $storage = $this->getHostStorage($uri->getHost());
+        $storage[static::hash($uri)] = strval($uri);
     }
 
     /**
-     * @param Url $url
+     * @param Uri $uri
      * @return bool
      */
-    public function isVisited(Url $url)
+    public function isVisited(Uri $uri)
     {
-        return isset($this->getHostStorage($url->getHost())[static::hash($url)]);
+        return isset($this->getHostStorage($uri->getHost())[static::hash($uri)]);
     }
 
     /**
      * hash
-     * @param Url $url
+     * @param Uri $uri
      * @return string
      */
-    protected function hash(Url $url)
+    protected function hash(Uri $uri)
     {
-        return md5($url->getUrlString());
+        return md5(strval($uri));
     }
 
     /**

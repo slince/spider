@@ -80,26 +80,26 @@ class CollectCommand extends Command
 
         //开始处理某个链接
         $dispatcher->bind(EventStore::COLLECT_URL, function(CollectUrlEvent $event){
-            $url = $event->getUrl();
+            $uri = $event->getUrl();
             $this->output->writeln(PHP_EOL);
-            $this->output->writeln(strval($url));
+            $this->output->writeln(strval($uri));
             $progressBar = new ProgressBar($this->output, 100);
             $progressBar->start();
             //临时存储该链接对应的进度条
-            $url->setParameter('progressBar', $progressBar);
+            $uri->setParameter('progressBar', $progressBar);
         });
 
         //下载失败
         $dispatcher->bind(EventStore::DOWNLOAD_URL_ERROR, function (DownloadUrlErrorEvent $event){
-            $url = $event->getUrl();
+            $uri = $event->getUrl();
             $this->output->writeln("Download Error");
         });
 
         //处理完成
         $dispatcher->bind(EventStore::COLLECTED_URL, function (CollectedUrlEvent $event){
             $asset = $event->getAsset();
-            $url = $asset->getUrl();
-            $progressBar = $url->getParameter('progressBar');
+            $uri = $asset->getUrl();
+            $progressBar = $uri->getParameter('progressBar');
             $progressBar->advance(50);
             $progressBar->finish();
         });

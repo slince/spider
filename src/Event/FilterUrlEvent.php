@@ -7,7 +7,7 @@ namespace Slince\Spider\Event;
 
 use Slince\Event\Event;
 use Slince\Spider\EventStore;
-use Slince\Spider\Url;
+use Slince\Spider\Uri;
 
 class FilterUrlEvent extends Event
 {
@@ -19,9 +19,9 @@ class FilterUrlEvent extends Event
 
     /**
      * 当前url
-     * @var Url
+     * @var Uri
      */
-    protected $url;
+    protected $uri;
 
     /**
      * 是否跳过该项
@@ -29,9 +29,9 @@ class FilterUrlEvent extends Event
      */
     protected $isSkipped;
 
-    public function __construct(Url $url, $subject, array $arguments = [])
+    public function __construct(Uri $uri, $subject, array $arguments = [])
     {
-        $this->url = $url;
+        $this->url = $uri;
         parent::__construct(static::NAME, $subject, $arguments);
     }
 
@@ -51,7 +51,7 @@ class FilterUrlEvent extends Event
 
     /**
      * 获取当前url
-     * @return Url
+     * @return Uri
      */
     public function getUrl()
     {

@@ -6,7 +6,7 @@
 namespace Slince\Spider\Asset;
 
 use Hoa\Mime\Mime;
-use Slince\Spider\Url;
+use Slince\Spider\Uri;
 
 class Asset implements AssetInterface
 {
@@ -17,9 +17,9 @@ class Asset implements AssetInterface
     protected static $supportedMimeTypes = ['*'];
 
     /**
-     * @var Url
+     * @var Uri
      */
-    protected $url;
+    protected $uri;
 
     /**
      * @var string
@@ -36,9 +36,9 @@ class Asset implements AssetInterface
      */
     protected $extension;
 
-    public function __construct(Url $url, $content, $contentType, $extension = null)
+    public function __construct(Uri $uri, $content, $contentType, $extension = null)
     {
-        $this->url = $url;
+        $this->url = $uri;
         $this->contentType = $contentType;
         if (!empty($content)) {
             $this->setContent($content);
@@ -50,11 +50,11 @@ class Asset implements AssetInterface
     }
 
     /**
-     * @param mixed $url
+     * @param mixed $uri
      */
-    public function setUrl(Url $url)
+    public function setUrl(Uri $uri)
     {
-        $this->url = $url;
+        $this->url = $uri;
     }
 
     /**
@@ -140,24 +140,24 @@ class Asset implements AssetInterface
     /**
      * 批量处理原生url
      * @param $rawUrls
-     * @return Url[]
+     * @return Uri[]
      */
     protected function handleRawUrls($rawUrls)
     {
         $rawUrls = array_unique($rawUrls);
-        $urls = [];
+        $uris = [];
         foreach ($rawUrls as $rawUrl) {
             if (!empty($rawUrl)) {
-                $urls[] = $this->handleRawUrl($rawUrl);
+                $uris[] = $this->handleRawUrl($rawUrl);
             }
         }
-        return $urls;
+        return $uris;
     }
 
     /**
      * 处理原生url
      * @param $rawUrl
-     * @return Url
+     * @return Uri
      */
     protected function handleRawUrl($rawUrl)
     {
@@ -176,11 +176,11 @@ class Asset implements AssetInterface
             }
             $newRawUrl = $this->url->getOrigin() . $pathname;
         }
-        $url = Url::createFromUrl($newRawUrl);
-        $url->setRawUrl($rawUrl);
+        $uri = Uri::createFromUrl($newRawUrl);
+        $uri->setRawUrl($rawUrl);
         //将链接所属的repository记录下来
-        $url->setParameter('page', $this);
-        return $url;
+        $uri->setParameter('page', $this);
+        return $uri;
     }
 
     /**

@@ -5,13 +5,13 @@
  */
 namespace Slince\Spider\Asset;
 
-use Slince\Spider\Url;
+use Slince\Spider\Uri;
 
 interface AssetInterface
 {
     /**
      * 获取资源url
-     * @return Url
+     * @return Uri
      */
     public function getUrl();
 
@@ -35,13 +35,13 @@ interface AssetInterface
 
     /**
      * 获取页面链接
-     * @return Url[]
+     * @return Uri[]
      */
     public function getPageUrls();
 
     /**
      * 获取子资源url
-     * @return Url[]
+     * @return Uri[]
      */
     public function getAssetUrls();
 

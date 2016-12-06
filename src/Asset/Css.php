@@ -30,11 +30,11 @@ class Css extends Asset
     public function extractImageUrls($content)
     {
         preg_match_all("/url\s*\((.*\.(?:jpg|jpeg|gif|png|bmp|svg|ttf|eot|woff|otf|woff2).*)\)/Ui", $content, $matches);
-        $urls = empty($matches[1]) ? [] : $matches[1];
-        array_walk($urls, function (&$url) {
-            $url = trim($url, '"\'');
+        $uris = empty($matches[1]) ? [] : $matches[1];
+        array_walk($uris, function (&$uri) {
+            $uri = trim($uri, '"\'');
         });
-        return $urls;
+        return $uris;
     }
 
     /**
@@ -45,10 +45,10 @@ class Css extends Asset
     public function extractCssUrls($content)
     {
         preg_match_all("/url\s*\((.*\.css.*)\)/Ui", $content, $matches);
-        $urls = empty($matches[1]) ? [] : $matches[1];
-        array_walk($urls, function (&$url) {
-            $url = trim($url, '"\'');
+        $uris = empty($matches[1]) ? [] : $matches[1];
+        array_walk($uris, function (&$uri) {
+            $uri = trim($uri, '"\'');
         });
-        return $urls;
+        return $uris;
     }
 }

@@ -2,18 +2,18 @@
 namespace Slince\Spider\Tests\Asset;
 
 use Slince\Spider\Asset\Html;
-use Slince\Spider\Url;
+use Slince\Spider\Uri;
 
 class HtmlTest extends \PHPUnit_Framework_TestCase
 {
     protected function createAsset($content)
     {
-        return new Html(new Url('http://www.domain.com/'), $content, 'text/html');
+        return new Html(new Uri('http://www.domain.com/'), $content, 'text/html');
     }
 
     protected function assertUrls($expectUrls, $actualUrls)
     {
-        $actualUrls = array_map(function(Url $url){
+        $actualUrls = array_map(function(Uri $url){
             return strval($url);
         }, $actualUrls);
         $intersectUrl = array_intersect($expectUrls, $actualUrls);

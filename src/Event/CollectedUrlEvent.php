@@ -8,7 +8,7 @@ namespace Slince\Spider\Event;
 use Slince\Event\Event;
 use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\EventStore;
-use Slince\Spider\Url;
+use Slince\Spider\Uri;
 
 class CollectedUrlEvent extends Event
 {
@@ -20,9 +20,9 @@ class CollectedUrlEvent extends Event
 
     /**
      * 当前url
-     * @var Url
+     * @var Uri
      */
-    protected $url;
+    protected $uri;
 
     /**
      * url对应资源
@@ -30,16 +30,16 @@ class CollectedUrlEvent extends Event
      */
     protected $asset;
 
-    public function __construct(Url $url, AssetInterface $asset, $subject, array $arguments = [])
+    public function __construct(Uri $uri, AssetInterface $asset, $subject, array $arguments = [])
     {
-        $this->url = $url;
+        $this->url = $uri;
         $this->asset = $asset;
         parent::__construct(static::NAME, $subject, $arguments);
     }
 
     /**
      * 获取当前url
-     * @return Url
+     * @return Uri
      */
     public function getUrl()
     {

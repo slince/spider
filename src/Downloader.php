@@ -22,16 +22,16 @@ class Downloader
     }
 
     /**
-     * @param Url $url
+     * @param Uri $uri
      * @return AssetInterface
      */
-    public function download(Url $url)
+    public function download(Uri $uri)
     {
         try {
-            $response = $this->client->get($url->getUrlString());
-            $url->setParameter('response', $response);
+            $response = $this->client->get($uri->getUrlString());
+            $uri->setParameter('response', $response);
             if ($response->getStatusCode() == '200') {
-                return AssetFactory::createFromPsr7Response($response, $url);
+                return AssetFactory::createFromPsr7Response($response, $uri);
             }
         } catch (\Exception $exception) {}
         throw new RuntimeException("Download failed");

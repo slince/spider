@@ -46,13 +46,13 @@ class AssetFactory
 
     /**
      * 创建资源
-     * @param Url $url
+     * @param Uri $uri
      * @param $content
      * @param $contentType
      * @param $extension
      * @return AssetInterface
      */
-    public static function create(Url $url, $content, $contentType, $extension)
+    public static function create(Uri $uri, $content, $contentType, $extension)
     {
         static $assetClasses = [];
         if (!isset($assetClasses[$contentType])) {
@@ -67,33 +67,33 @@ class AssetFactory
         } else {
             $assetClass = $assetClasses[$contentType];
         }
-        return new $assetClass($url, $content, $contentType, $extension);
+        return new $assetClass($uri, $content, $contentType, $extension);
     }
 
     /**
      * 从http响应创建资源
      * @param Response $response
-     * @param Url $url
+     * @param Uri $uri
      * @return AssetInterface
      */
-    public static function createFromPsr7Response(Response $response, Url $url)
+    public static function createFromPsr7Response(Response $response, Uri $uri)
     {
-        list($contentType, $extension) = static::getAssetContentTypeAndExtension($url, $response);
-        return static::create($url, $response->getBody()->getContents(), $contentType, $extension);
+        list($contentType, $extension) = static::getAssetContentTypeAndExtension($uri, $response);
+        return static::create($uri, $response->getBody()->getContents(), $contentType, $extension);
     }
 
     /**
      * 计算内容类型
-     * @param Url $url
+     * @param Uri $uri
      * @param Response $response
      * @return string
      */
-    protected static function getAssetContentTypeAndExtension(Url $url, Response $response)
+    protected static function getAssetContentTypeAndExtension(Uri $uri, Response $response)
     {
         $contentTypeString = $response->getHeaderLine('content-type');
         $contentType = strpos($contentTypeString, ';') === false
             ? trim($contentTypeString) : trim(explode(';', $contentTypeString)[0]);
-        $extension = pathinfo($url->getPath(), PATHINFO_EXTENSION);
+        $extension = pathinfo($uri->getPath(), PATHINFO_EXTENSION);
         if (!$contentType) {
             if ($extension) {
                 $contentType = Mime::getMimeFromExtension($extension);

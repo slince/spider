@@ -8,7 +8,7 @@ namespace Slince\Spider\Processor\HtmlCollector;
 use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\Processor\Processor;
 use Slince\Spider\Spider;
-use Slince\Spider\Url;
+use Slince\Spider\Uri;
 use Slince\Spider\Utility;
 use Slince\Spider\Asset\Html;
 use Symfony\Component\Filesystem\Filesystem;
@@ -83,20 +83,20 @@ class HtmlCollector extends Processor
 
     /**
      * 检查链接是否继续
-     * @param Url $url
+     * @param Uri $uri
      * @return boolean
      */
-    public function checkUrlEnabled(Url $url)
+    public function checkUrlEnabled(Uri $uri)
     {
         if ($this->allowHosts) {
             $allowHostsPattern = $this->makeAllowHostsPattern($this->allowHosts);
             //如果当前链接host不符合允许的host则跳过
-            if (!preg_match($allowHostsPattern, $url->getHost())) {
+            if (!preg_match($allowHostsPattern, $uri->getHost())) {
                 return false;
             }
         }
         //如果是重复页面正则并且已经下载过则不再下载
-        if (!$this->checkPageUrlPatterns($url)) {
+        if (!$this->checkPageUrlPatterns($uri)) {
             return false;
         }
         return true;
@@ -124,17 +124,17 @@ class HtmlCollector extends Processor
 
     /**
      * 检查是否符合页面正则
-     * @param Url $url
+     * @param Uri $uri
      * @return bool
      */
-    protected function checkPageUrlPatterns(Url $url)
+    protected function checkPageUrlPatterns(Uri $uri)
     {
         $result = true;
-        foreach ($this->pageUrlPatterns as $urlPattern => $template) {
-            if (preg_match($urlPattern, $url->getUrlString())) {
+        foreach ($this->pageUrlPatterns as $uriPattern => $template) {
+            if (preg_match($uriPattern, $uri->getUrlString())) {
                 //设置模式
-                $url->setParameter('pageUrlPattern', $urlPattern);
-                if ($this->getPageUrlDownloadTime($urlPattern) > 1) {
+                $uri->setParameter('pageUrlPattern', $uriPattern);
+                if ($this->getPageUrlDownloadTime($uriPattern) > 1) {
                     $result = false;
                     break;
                 }

@@ -121,48 +121,48 @@ class Spider
 
     /**
      * 下载资源
-     * @param Url $url
+     * @param Uri $uri
      * @return Asset
      */
-    protected function download(Url $url)
+    protected function download(Uri $uri)
     {
-        return $this->downloader->download($url);
+        return $this->downloader->download($uri);
     }
 
     /**
      * 过滤链接
-     * @param Url $url
+     * @param Uri $uri
      * @return bool
      */
-    protected function filterUrl(Url $url)
+    protected function filterUrl(Uri $uri)
     {
         //junk url或者已经访问的链接不再处理
-        if (preg_match(self::$junkUrlPattern, $url->getRawUrl()) || TraceReport::instance()->isVisited($url)) {
+        if (preg_match(self::$junkUrlPattern, $uri->getRawUrl()) || TraceReport::instance()->isVisited($uri)) {
             return false;
         }
         //如果是白名单规则一定通过
-        if ($this->checkUrlPatterns($url->getRawUrl(), $this->whiteUrlPatterns)) {
+        if ($this->checkUrlPatterns($uri->getRawUrl(), $this->whiteUrlPatterns)) {
             return true;
         }
         //如果符合黑名单规则直接据掉
-        if ($this->checkUrlPatterns($url->getRawUrl(), $this->blackUrlPatterns)) {
+        if ($this->checkUrlPatterns($uri->getRawUrl(), $this->blackUrlPatterns)) {
             return false;
         }
-        $filterUrlEvent = new FilterUrlEvent($url, $this);
+        $filterUrlEvent = new FilterUrlEvent($uri, $this);
         $this->dispatcher->dispatch(EventStore::FILTER_URL, $filterUrlEvent);
         return !$filterUrlEvent->isSkipped();
     }
 
     /**
      * 检查正则
-     * @param $url
+     * @param $uri
      * @param array $patterns
      * @return bool
      */
-    protected function checkUrlPatterns($url, array $patterns)
+    protected function checkUrlPatterns($uri, array $patterns)
     {
         foreach ($patterns as $pattern) {
-            if (preg_match($pattern, $url)) {
+            if (preg_match($pattern, $uri)) {
                 return true;
             }
         }
@@ -171,18 +171,18 @@ class Spider
 
     /**
      * 处理链接资源
-     * @param Url $url
+     * @param Uri $uri
      * @return boolean
      */
-    protected function processUrl(Url $url)
+    protected function processUrl(Uri $uri)
     {
-        if ($this->filterUrl($url)) {
-            $this->dispatcher->dispatch(EventStore::COLLECT_URL, new CollectUrlEvent($url, $this));
-            TraceReport::instance()->report($url);
+        if ($this->filterUrl($uri)) {
+            $this->dispatcher->dispatch(EventStore::COLLECT_URL, new CollectUrlEvent($uri, $this));
+            TraceReport::instance()->report($uri);
             try {
-                $asset = $this->downloader->download($url);
+                $asset = $this->downloader->download($uri);
             } catch (RuntimeException $exception) {
-                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URL_ERROR, new DownloadUrlErrorEvent($url, $this));
+                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URL_ERROR, new DownloadUrlErrorEvent($uri, $this));
                 return false;
             }
             //记录已采集的链接
@@ -190,17 +190,17 @@ class Spider
             //处理该链接下的资源
             $enabledProcessChildrenUrl = !$asset->isBinary() && $asset->getContent();
             if ($enabledProcessChildrenUrl) {
-                $this->dispatcher->dispatch(EventStore::COLLECT_ASSET_URL, new CollectAssetUrlEvent($url, $asset, $this));
-                foreach ($asset->getAssetUrls() as $url) {
-                    $this->processUrl($url);
+                $this->dispatcher->dispatch(EventStore::COLLECT_ASSET_URL, new CollectAssetUrlEvent($uri, $asset, $this));
+                foreach ($asset->getAssetUrls() as $uri) {
+                    $this->processUrl($uri);
                 }
-                $this->dispatcher->dispatch(EventStore::COLLECTED_ASSET_URL, new CollectedAssetUrlEvent($url, $asset, $this));
+                $this->dispatcher->dispatch(EventStore::COLLECTED_ASSET_URL, new CollectedAssetUrlEvent($uri, $asset, $this));
             }
-            $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUrlEvent($url, $asset, $this));
+            $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUrlEvent($uri, $asset, $this));
             //采集周期结束之后处理其它链接
             if ($enabledProcessChildrenUrl) {
-                foreach ($asset->getPageUrls() as $url) {
-                    $this->processUrl($url);
+                foreach ($asset->getPageUrls() as $uri) {
+                    $this->processUrl($uri);
                 }
             }
         }
@@ -209,10 +209,10 @@ class Spider
 
     /**
      * 开始出发
-     * @param $url
+     * @param $uri
      */
-    public function run($url)
+    public function run($uri)
     {
-        $this->processUrl(Url::createFromUrl($url));
+        $this->processUrl(new Uri($uri));
     }
 }

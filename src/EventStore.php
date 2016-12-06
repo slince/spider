@@ -20,6 +20,18 @@ class EventStore
     const COLLECT_URL = 'collectUrl';
 
     /**
+     * 采集url页面资源事件
+     * @var string
+     */
+    const COLLECT_ASSET_URL = 'collectAssetUrl';
+
+    /**
+     * 采集url页面资源事件
+     * @var string
+     */
+    const COLLECTED_ASSET_URL = 'collectAssetUrl';
+
+    /**
      * 采集完毕url内容事件
      * @var string
      */

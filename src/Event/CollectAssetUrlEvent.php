@@ -10,13 +10,13 @@ use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\EventStore;
 use Slince\Spider\Url;
 
-class CollectedAssetUrlEvent extends Event
+class CollectAssetUrlEvent extends Event
 {
     /**
      * 事件名称
      * @var string
      */
-    const NAME = EventStore::COLLECTED_ASSET_URL;
+    const NAME = EventStore::COLLECT_ASSET_URL;
 
     /**
      * 当前url
@@ -25,15 +25,15 @@ class CollectedAssetUrlEvent extends Event
     protected $url;
 
     /**
-     * url对应资源
+     * 所属资源
      * @var AssetInterface
      */
-    protected $asset;
+    protected $ownerAsset;
 
-    public function __construct(Url $url, AssetInterface $asset, $subject, array $arguments = [])
+    public function __construct(Url $url, AssetInterface $ownerAsset, $subject, array $arguments = [])
     {
         $this->url = $url;
-        $this->asset = $asset;
+        $this->ownerAsset = $ownerAsset;
         parent::__construct(static::NAME, $subject, $arguments);
     }
 
@@ -50,8 +50,8 @@ class CollectedAssetUrlEvent extends Event
      * 获取资源
      * @return AssetInterface
      */
-    public function getAsset()
+    public function getOwnerAsset()
     {
-        return $this->asset;
+        return $this->ownerAsset;
     }
 }

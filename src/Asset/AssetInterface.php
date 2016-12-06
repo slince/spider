@@ -34,6 +34,12 @@ interface AssetInterface
     public function getExtension();
 
     /**
+     * 获取页面链接
+     * @return Url[]
+     */
+    public function getPageUrls();
+
+    /**
      * 获取子资源url
      * @return Url[]
      */

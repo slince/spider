@@ -113,7 +113,6 @@ class HtmlCollector extends Processor
     public function generateFileName(AssetInterface $asset)
     {
         $basePath = rtrim($this->getSavePath() . dirname($asset->getUrl()->getPath()), '\\/') . DIRECTORY_SEPARATOR;
-        $extension = $asset->getExtension();
         return $basePath . $this->getBasename($asset, $basePath);
     }
 

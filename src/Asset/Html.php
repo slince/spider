@@ -6,6 +6,7 @@
 namespace Slince\Spider\Asset;
 
 use HtmlParser\ParserDom;
+use Slince\Spider\Url;
 
 class Html extends Asset
 {
@@ -42,7 +43,7 @@ class Html extends Asset
     ];
 
     /**
-     * @param string $content
+     * {@inheritdoc}
      */
     public function setContent($content)
     {
@@ -63,16 +64,22 @@ class Html extends Asset
     }
 
     /**
-     * 获取所有资源链接
-     * @return array
+     * {@inheritdoc}
+     */
+    public function getPageUrls()
+    {
+        return $this->handleRawUrls($this->extractPageUrls($this->content));
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getAssetUrls()
     {
         return $this->handleRawUrls(array_merge(
             $this->extractCssUrls($this->content),
             $this->extractImageUrls($this->content),
-            $this->extractScriptUrls($this->content),
-            $this->extractPageUrls($this->content)
+            $this->extractScriptUrls($this->content)
         ));
     }
 

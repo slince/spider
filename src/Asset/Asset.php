@@ -121,6 +121,14 @@ class Asset implements AssetInterface
     /**
      * {@inheritdoc}
      */
+    public function getPageUrls()
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getAssetUrls()
     {
         return [];
@@ -129,7 +137,7 @@ class Asset implements AssetInterface
     /**
      * 批量处理原生url
      * @param $rawUrls
-     * @return array
+     * @return Url[]
      */
     protected function handleRawUrls($rawUrls)
     {

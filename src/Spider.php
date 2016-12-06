@@ -7,6 +7,8 @@ namespace Slince\Spider;
 
 use Slince\Event\Dispatcher;
 use Slince\Spider\Asset\Asset;
+use Slince\Spider\Event\CollectAssetUrlEvent;
+use Slince\Spider\Event\CollectedAssetUrlEvent;
 use Slince\Spider\Event\FilterUrlEvent;
 use Slince\Spider\Event\CollectUrlEvent;
 use Slince\Spider\Event\CollectedUrlEvent;
@@ -174,12 +176,23 @@ class Spider
         if ($this->filterUrl($url)) {
             $this->dispatcher->dispatch(EventStore::COLLECT_URL, new CollectUrlEvent($url, $this));
             $asset = $this->downloader->download($url);
-            $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUrlEvent($url, $asset, $this));
+            //记录已采集的链接
             $this->assets[] = $asset;
             TraceReport::report($url);
-            if (!$asset->isBinary() && $asset->getContent()) {
+            //处理该链接下的资源
+            $enabledProcessChildrenUrl = !$asset->isBinary() && $asset->getContent();
+            if ($enabledProcessChildrenUrl) {
+                $this->dispatcher->dispatch(EventStore::COLLECT_ASSET_URL, new CollectAssetUrlEvent($url, $asset, $this));
                 foreach ($asset->getAssetUrls() as $url) {
-                    $this->processUrl(Url::createFromUrl($url));
+                    $this->processUrl($url);
+                }
+                $this->dispatcher->dispatch(EventStore::COLLECTED_ASSET_URL, new CollectedAssetUrlEvent($url, $asset, $this));
+            }
+            $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUrlEvent($url, $asset, $this));
+            //采集周期结束之后处理其它链接
+            if ($enabledProcessChildrenUrl) {
+                foreach ($asset->getPageUrls() as $url) {
+                    $this->processUrl($url);
                 }
             }
         }

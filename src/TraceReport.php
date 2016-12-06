@@ -5,12 +5,12 @@
  */
 namespace Slince\Spider;
 
-use SplObjectStorage;
+use ArrayObject;
 
 class TraceReport
 {
     /**
-     * @var SplObjectStorage[]
+     * @var array
      */
     protected static $reports;
 
@@ -21,7 +21,7 @@ class TraceReport
     static function report(Url $url)
     {
         $storage = static::getHostStorage($url->getHost());
-        $storage->attach($url);
+        $storage[static::hash($url)] = $url;
     }
 
     /**
@@ -30,17 +30,27 @@ class TraceReport
      */
     static function isVisited(Url $url)
     {
-        return static::getHostStorage($url->getHost())->contains($url);
+        return isset(static::getHostStorage($url->getHost())[static::hash($url)]);
+    }
+
+    /**
+     * hash
+     * @param Url $url
+     * @return string
+     */
+    protected static function hash(Url $url)
+    {
+        return md5($url->getRawUrl());
     }
 
     /**
      * @param string $host
-     * @return SplObjectStorage
+     * @return array
      */
     protected static function getHostStorage($host)
     {
         if (!isset(static::$reports[$host])) {
-            static::$reports[$host] = new SplObjectStorage();
+            static::$reports[$host] = new ArrayObject();
         }
         return static::$reports[$host];
     }

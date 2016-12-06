@@ -145,7 +145,7 @@ class Spider
             return false;
         }
         $filterUrlEvent = new FilterUrlEvent($url, $this);
-        $this->dispatcher->dispatch(EventStore::FILTER_URL, new FilterUrlEvent($url, $this));
+        $this->dispatcher->dispatch(EventStore::FILTER_URL, $filterUrlEvent);
         return !$filterUrlEvent->isSkipped();
     }
 
@@ -177,7 +177,7 @@ class Spider
             $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUrlEvent($url, $asset, $this));
             $this->assets[] = $asset;
             TraceReport::report($url);
-            if (!$asset->isBinary()) {
+            if (!$asset->isBinary() && $asset->getContent()) {
                 foreach ($asset->getAssetUrls() as $url) {
                     $this->processUrl(Url::createFromUrl($url));
                 }

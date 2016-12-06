@@ -79,7 +79,7 @@ class AssetFactory
     public static function createFromPsr7Response(Response $response, Url $url)
     {
         list($contentType, $extension) = static::getAssetContentTypeAndExtension($url, $response);
-        return static::create($url, $response->getBody(), $contentType, $extension);
+        return static::create($url, $response->getBody()->getContents(), $contentType, $extension);
     }
 
     /**
@@ -102,7 +102,7 @@ class AssetFactory
                 $contentType = 'text/html';
             }
         } else {
-            try{
+            try {
                 $extension = Mime::getExtensionsFromMime($contentType)[0];
             } catch (MimeIsNotFound $exception) {
                 $extension = pathinfo($url->getPath(), PATHINFO_EXTENSION);

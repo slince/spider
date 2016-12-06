@@ -62,7 +62,7 @@ class Command extends BaseCommand
         $filePath = getcwd(). DIRECTORY_SEPARATOR . md5(TraceReport::class);
         if (file_exists($filePath) && ($content = file_get_contents($filePath))) {
             $instance = unserialize($content);
-            TraceReport::setInstance($instance);
+            $instance instanceof TraceReport && TraceReport::setInstance($instance);
         }
     }
 

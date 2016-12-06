@@ -29,13 +29,13 @@ class HtmlCollector extends Processor
      * ]
      * @var array
      */
-    protected $pageUrlPatterns = [];
+    protected $pageUriPatterns = [];
 
     /**
      * 页面正则下载次数
      * @var array
      */
-    protected $pageUrlPatternDownloadTimes = [];
+    protected $pageUriPatternDownloadTimes = [];
 
     /**
      * 下载模板保存路径
@@ -48,12 +48,12 @@ class HtmlCollector extends Processor
      */
     protected $filesystem;
 
-    public function __construct(Spider $spider, $savePath, $allowHosts = [], $pageUrlPatterns = [])
+    public function __construct(Spider $spider, $savePath, $allowHosts = [], $pageUriPatterns = [])
     {
         parent::__construct($spider);
         $this->savePath = trim($savePath, '\/') . DIRECTORY_SEPARATOR;
         $this->allowHosts = $allowHosts;
-        $this->pageUrlPatterns = $pageUrlPatterns;
+        $this->pageUriPatterns = $pageUriPatterns;
         $this->filesystem = Utility::getFilesystem();
     }
 
@@ -76,9 +76,9 @@ class HtmlCollector extends Processor
     /**
      * @return array
      */
-    public function getPageUrlPatterns()
+    public function getPageUriPatterns()
     {
-        return $this->pageUrlPatterns;
+        return $this->pageUriPatterns;
     }
 
     /**
@@ -86,7 +86,7 @@ class HtmlCollector extends Processor
      * @param Uri $uri
      * @return boolean
      */
-    public function checkUrlEnabled(Uri $uri)
+    public function checkUriEnabled(Uri $uri)
     {
         if ($this->allowHosts) {
             $allowHostsPattern = $this->makeAllowHostsPattern($this->allowHosts);
@@ -96,7 +96,7 @@ class HtmlCollector extends Processor
             }
         }
         //如果是重复页面正则并且已经下载过则不再下载
-        if (!$this->checkPageUrlPatterns($uri)) {
+        if (!$this->checkPageUriPatterns($uri)) {
             return false;
         }
         return true;
@@ -114,12 +114,12 @@ class HtmlCollector extends Processor
 
     /**
      * 获取某个页面正则已经  下载的次数
-     * @param $pageUrlPattern
+     * @param $pageUriPattern
      * @return int|mixed
      */
-    protected function getPageUrlDownloadTime($pageUrlPattern)
+    protected function getPageUriDownloadTime($pageUriPattern)
     {
-        return isset($this->pageUrlPatternDownloadTimes[$pageUrlPattern]) ? $this->pageUrlPatternDownloadTimes[$pageUrlPattern] : 0;
+        return isset($this->pageUriPatternDownloadTimes[$pageUriPattern]) ? $this->pageUriPatternDownloadTimes[$pageUriPattern] : 0;
     }
 
     /**
@@ -127,14 +127,15 @@ class HtmlCollector extends Processor
      * @param Uri $uri
      * @return bool
      */
-    protected function checkPageUrlPatterns(Uri $uri)
+    protected function checkPageUriPatterns(Uri $uri)
     {
         $result = true;
-        foreach ($this->pageUrlPatterns as $uriPattern => $template) {
-            if (preg_match($uriPattern, $uri->getUrlString())) {
+        $uriString  = strval($uri);
+        foreach ($this->pageUriPatterns as $uriPattern => $template) {
+            if (preg_match($uriPattern, $uriString)) {
                 //设置模式
-                $uri->setParameter('pageUrlPattern', $uriPattern);
-                if ($this->getPageUrlDownloadTime($uriPattern) > 1) {
+                $uri->setParameter('pageUriPattern', $uriPattern);
+                if ($this->getPageUriDownloadTime($uriPattern) > 1) {
                     $result = false;
                     break;
                 }
@@ -150,27 +151,27 @@ class HtmlCollector extends Processor
     public function saveAsset(AssetInterface $asset)
     {
         //静态资源所属父级repository的content要进行替换
-        $parentAsset = $asset->getUrl()->getParameter('page');
+        $parentAsset = $asset->getUri()->getParameter('page');
         if (!is_null($parentAsset) && !$asset instanceof Html) {
             //调整父级内容
 //            $parentAsset->setContent(preg_replace(
-//                "#(?:http)?s?:?(?://)?{$asset->getUrl()->getHost()}#",
+//                "#(?:http)?s?:?(?://)?{$asset->getUri()->getHost()}#",
 //                '',
 //                $parentAsset->getContent()
 //            ));
             $parentAsset->setContent(preg_replace(
-                "#(?:http)?s?:?(?://)?{$asset->getUrl()->getHost()}#",
+                "#(?:http)?s?:?(?://)?{$asset->getUri()->getHost()}#",
                 '',
                 $parentAsset->getContent()
             ));
         }
         $this->filesystem->dumpFile($this->generateFileName($asset), $asset->getContent());
         //如果有页面正则则维护页面信息
-        if ($pageUrlPattern = $asset->getUrl()->getParameter('pageUrlPattern')) {
-            if (!isset($this->pageUrlPatternDownloadTimes[$pageUrlPattern])) {
-                $this->pageUrlPatternDownloadTimes[$pageUrlPattern] = 0;
+        if ($pageUriPattern = $asset->getUri()->getParameter('pageUriPattern')) {
+            if (!isset($this->pageUriPatternDownloadTimes[$pageUriPattern])) {
+                $this->pageUriPatternDownloadTimes[$pageUriPattern] = 0;
             }
-            $this->pageUrlPatternDownloadTimes[$pageUrlPattern] ++;
+            $this->pageUriPatternDownloadTimes[$pageUriPattern] ++;
         }
     }
 
@@ -181,7 +182,7 @@ class HtmlCollector extends Processor
      */
     protected function generateFileName(AssetInterface $asset)
     {
-        $basePath = rtrim($this->savePath . dirname($asset->getUrl()->getPath()), '\\/') . DIRECTORY_SEPARATOR;
+        $basePath = rtrim($this->savePath . dirname($asset->getUri()->getPath()), '\\/') . DIRECTORY_SEPARATOR;
         return $basePath . $this->getBasename($asset, $basePath);
     }
 
@@ -195,10 +196,10 @@ class HtmlCollector extends Processor
     {
         $extension = $asset->getExtension();
         //如果是符合正则页面的资源，使用配置的页面
-        if ($pageUrlPattern = $asset->getUrl()->getParameter('pageUrlPattern')) {
-            $filename = $this->pageUrlPatterns[$pageUrlPattern];
+        if ($pageUriPattern = $asset->getUri()->getParameter('pageUriPattern')) {
+            $filename = $this->pageUriPatterns[$pageUriPattern];
         } else {
-            $filename = pathinfo($asset->getUrl()->getPath(), PATHINFO_FILENAME);
+            $filename = pathinfo($asset->getUri()->getPath(), PATHINFO_FILENAME);
             if (!$filename) {
                 $unavailable = true;
                 $index = 0;

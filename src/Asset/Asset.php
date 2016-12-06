@@ -38,7 +38,7 @@ class Asset implements AssetInterface
 
     public function __construct(Uri $uri, $content, $contentType, $extension = null)
     {
-        $this->url = $uri;
+        $this->uri = $uri;
         $this->contentType = $contentType;
         if (!empty($content)) {
             $this->setContent($content);
@@ -52,17 +52,17 @@ class Asset implements AssetInterface
     /**
      * @param mixed $uri
      */
-    public function setUrl(Uri $uri)
+    public function setUri(Uri $uri)
     {
-        $this->url = $uri;
+        $this->uri = $uri;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getUrl()
+    public function getUri()
     {
-        return $this->url;
+        return $this->uri;
     }
 
     /**
@@ -124,7 +124,7 @@ class Asset implements AssetInterface
     /**
      * {@inheritdoc}
      */
-    public function getPageUrls()
+    public function getPageUris()
     {
         return [];
     }
@@ -132,23 +132,23 @@ class Asset implements AssetInterface
     /**
      * {@inheritdoc}
      */
-    public function getAssetUrls()
+    public function getAssetUris()
     {
         return [];
     }
 
     /**
      * 批量处理原生url
-     * @param $rawUrls
+     * @param $rawUris
      * @return Uri[]
      */
-    protected function handleRawUrls($rawUrls)
+    protected function handleRawUris($rawUris)
     {
-        $rawUrls = array_unique($rawUrls);
+        $rawUris = array_unique($rawUris);
         $uris = [];
-        foreach ($rawUrls as $rawUrl) {
-            if (!empty($rawUrl)) {
-                $uris[] = $this->handleRawUrl($rawUrl);
+        foreach ($rawUris as $rawUri) {
+            if (!empty($rawUri)) {
+                $uris[] = $this->handleRawUri($rawUri);
             }
         }
         return $uris;
@@ -156,28 +156,27 @@ class Asset implements AssetInterface
 
     /**
      * 处理原生url
-     * @param $rawUrl
+     * @param $rawUri
      * @return Uri
      */
-    protected function handleRawUrl($rawUrl)
+    protected function handleRawUri($rawUri)
     {
         // http://www.domain.com 或者 //www.domain.com
-        if (strpos($rawUrl, 'http') !== false || substr($rawUrl, 0, 2) == '//') {
-            $newRawUrl = $rawUrl;
+        if (strpos($rawUri, 'http') !== false || substr($rawUri, 0, 2) == '//') {
+            $newRawUri = $rawUri;
         } else {
-            if ($rawUrl{0} !== '/') {
-                if (pathinfo($this->getUrl()->getPath(), PATHINFO_EXTENSION) == '') {
-                    $pathname = rtrim($this->url->getPath(), '/') . '/' . $rawUrl;
+            if ($rawUri{0} !== '/') {
+                if (pathinfo($this->getUri()->getPath(), PATHINFO_EXTENSION) == '') {
+                    $pathname = rtrim($this->uri->getPath(), '/') . '/' . $rawUri;
                 } else {
-                    $pathname = dirname($this->url->getPath()) . '/' . $rawUrl;
+                    $pathname = dirname($this->uri->getPath()) . '/' . $rawUri;
                 }
             } else {
-                $pathname = $rawUrl;
+                $pathname = $rawUri;
             }
-            $newRawUrl = $this->url->getOrigin() . $pathname;
+            $newRawUri = $this->uri->getOrigin() . $pathname;
         }
-        $uri = Uri::createFromUrl($newRawUrl);
-        $uri->setRawUrl($rawUrl);
+        $uri = new Uri($newRawUri);
         //将链接所属的repository记录下来
         $uri->setParameter('page', $this);
         return $uri;

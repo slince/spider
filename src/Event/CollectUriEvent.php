@@ -9,13 +9,13 @@ use Slince\Event\Event;
 use Slince\Spider\EventStore;
 use Slince\Spider\Uri;
 
-class DownloadUrlErrorEvent extends Event
+class CollectUriEvent extends Event
 {
     /**
      * 事件名称
      * @var string
      */
-    const NAME = EventStore::FILTER_URL;
+    const NAME = EventStore::COLLECT_URL;
 
     /**
      * 当前url
@@ -23,37 +23,17 @@ class DownloadUrlErrorEvent extends Event
      */
     protected $uri;
 
-    /**
-     * 是否跳过该项
-     * @var boolean
-     */
-    protected $isSkipped;
-
     public function __construct(Uri $uri, $subject, array $arguments = [])
     {
         $this->url = $uri;
         parent::__construct(static::NAME, $subject, $arguments);
     }
 
-    public function skipThis()
-    {
-        $this->isSkipped = true;
-    }
-
-    /**
-     * 是否需要跳过该url
-     * @return bool
-     */
-    public function isSkipped()
-    {
-        return $this->isSkipped;
-    }
-
     /**
      * 获取当前url
      * @return Uri
      */
-    public function getUrl()
+    public function getUri()
     {
         return $this->url;
     }

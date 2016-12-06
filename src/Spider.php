@@ -7,12 +7,12 @@ namespace Slince\Spider;
 
 use Slince\Event\Dispatcher;
 use Slince\Spider\Asset\Asset;
-use Slince\Spider\Event\CollectAssetUrlEvent;
-use Slince\Spider\Event\CollectedAssetUrlEvent;
-use Slince\Spider\Event\DownloadUrlErrorEvent;
-use Slince\Spider\Event\FilterUrlEvent;
-use Slince\Spider\Event\CollectUrlEvent;
-use Slince\Spider\Event\CollectedUrlEvent;
+use Slince\Spider\Event\CollectAssetUriEvent;
+use Slince\Spider\Event\CollectedAssetUriEvent;
+use Slince\Spider\Event\DownloadUriErrorEvent;
+use Slince\Spider\Event\FilterUriEvent;
+use Slince\Spider\Event\CollectUriEvent;
+use Slince\Spider\Event\CollectedUriEvent;
 use Slince\Spider\Exception\RuntimeException;
 
 class Spider
@@ -21,19 +21,19 @@ class Spider
      * 入口链接
      * @var string
      */
-    protected $rawEntranceUrl;
+    protected $rawEntranceUri;
 
     /**
      * 黑名单链接规则
      * @var array
      */
-    protected $blackUrlPatterns = [];
+    protected $blackUriPatterns = [];
 
     /**
      * 白名单链接
      * @var array
      */
-    protected $whiteUrlPatterns = [];
+    protected $whiteUriPatterns = [];
 
     /**
      * @var Downloader
@@ -55,7 +55,7 @@ class Spider
      * 垃圾链接规则
      * @var string
      */
-    protected static $junkUrlPattern = '/^(?:#|mailto|javascript):/';
+    protected static $junkUriPattern = '/^(?:#|mailto|javascript):/';
 
     public function __construct()
     {
@@ -64,51 +64,51 @@ class Spider
     }
 
     /**
-     * @param array $blackUrlPatterns
+     * @param array $blackUriPatterns
      */
-    public function setBlackUrlPatterns($blackUrlPatterns)
+    public function setBlackUriPatterns($blackUriPatterns)
     {
-        $this->blackUrlPatterns = $blackUrlPatterns;
+        $this->blackUriPatterns = $blackUriPatterns;
     }
 
     /**
-     * @param $blackUrlPatterns
+     * @param $blackUriPatterns
      */
-    public function appendBlackUrlPatterns($blackUrlPatterns)
+    public function appendBlackUriPatterns($blackUriPatterns)
     {
-        $this->blackUrlPatterns = array_merge($this->blackUrlPatterns, $blackUrlPatterns);
-    }
-
-    /**
-     * @return array
-     */
-    public function getBlackUrlPatterns()
-    {
-        return $this->blackUrlPatterns;
-    }
-
-    /**
-     * @param array $whiteUrlPatterns
-     */
-    public function setWhiteUrlPatterns($whiteUrlPatterns)
-    {
-        $this->whiteUrlPatterns = $whiteUrlPatterns;
-    }
-
-    /**
-     * @param $whiteUrlPatterns
-     */
-    public function appendWhiteUrlPatterns($whiteUrlPatterns)
-    {
-        $this->whiteUrlPatterns = array_merge($this->whiteUrlPatterns, $whiteUrlPatterns);
+        $this->blackUriPatterns = array_merge($this->blackUriPatterns, $blackUriPatterns);
     }
 
     /**
      * @return array
      */
-    public function getWhiteUrlPatterns()
+    public function getBlackUriPatterns()
     {
-        return $this->whiteUrlPatterns;
+        return $this->blackUriPatterns;
+    }
+
+    /**
+     * @param array $whiteUriPatterns
+     */
+    public function setWhiteUriPatterns($whiteUriPatterns)
+    {
+        $this->whiteUriPatterns = $whiteUriPatterns;
+    }
+
+    /**
+     * @param $whiteUriPatterns
+     */
+    public function appendWhiteUriPatterns($whiteUriPatterns)
+    {
+        $this->whiteUriPatterns = array_merge($this->whiteUriPatterns, $whiteUriPatterns);
+    }
+
+    /**
+     * @return array
+     */
+    public function getWhiteUriPatterns()
+    {
+        return $this->whiteUriPatterns;
     }
 
     /**
@@ -134,23 +134,24 @@ class Spider
      * @param Uri $uri
      * @return bool
      */
-    protected function filterUrl(Uri $uri)
+    protected function filterUri(Uri $uri)
     {
         //junk url或者已经访问的链接不再处理
-        if (preg_match(self::$junkUrlPattern, $uri->getRawUrl()) || TraceReport::instance()->isVisited($uri)) {
+        $uriString  = strval($uri);
+        if (preg_match(self::$junkUriPattern, $uriString) || TraceReport::instance()->isVisited($uri)) {
             return false;
         }
         //如果是白名单规则一定通过
-        if ($this->checkUrlPatterns($uri->getRawUrl(), $this->whiteUrlPatterns)) {
+        if ($this->checkUriPatterns($uriString, $this->whiteUriPatterns)) {
             return true;
         }
         //如果符合黑名单规则直接据掉
-        if ($this->checkUrlPatterns($uri->getRawUrl(), $this->blackUrlPatterns)) {
+        if ($this->checkUriPatterns($uriString, $this->blackUriPatterns)) {
             return false;
         }
-        $filterUrlEvent = new FilterUrlEvent($uri, $this);
-        $this->dispatcher->dispatch(EventStore::FILTER_URL, $filterUrlEvent);
-        return !$filterUrlEvent->isSkipped();
+        $filterUriEvent = new FilterUriEvent($uri, $this);
+        $this->dispatcher->dispatch(EventStore::FILTER_URL, $filterUriEvent);
+        return !$filterUriEvent->isSkipped();
     }
 
     /**
@@ -159,7 +160,7 @@ class Spider
      * @param array $patterns
      * @return bool
      */
-    protected function checkUrlPatterns($uri, array $patterns)
+    protected function checkUriPatterns($uri, array $patterns)
     {
         foreach ($patterns as $pattern) {
             if (preg_match($pattern, $uri)) {
@@ -174,33 +175,33 @@ class Spider
      * @param Uri $uri
      * @return boolean
      */
-    protected function processUrl(Uri $uri)
+    protected function processUri(Uri $uri)
     {
-        if ($this->filterUrl($uri)) {
-            $this->dispatcher->dispatch(EventStore::COLLECT_URL, new CollectUrlEvent($uri, $this));
+        if ($this->filterUri($uri)) {
+            $this->dispatcher->dispatch(EventStore::COLLECT_URL, new CollectUriEvent($uri, $this));
             TraceReport::instance()->report($uri);
             try {
                 $asset = $this->downloader->download($uri);
             } catch (RuntimeException $exception) {
-                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URL_ERROR, new DownloadUrlErrorEvent($uri, $this));
+                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URL_ERROR, new DownloadUriErrorEvent($uri, $this));
                 return false;
             }
             //记录已采集的链接
             $this->assets[] = $asset;
             //处理该链接下的资源
-            $enabledProcessChildrenUrl = !$asset->isBinary() && $asset->getContent();
-            if ($enabledProcessChildrenUrl) {
-                $this->dispatcher->dispatch(EventStore::COLLECT_ASSET_URL, new CollectAssetUrlEvent($uri, $asset, $this));
-                foreach ($asset->getAssetUrls() as $uri) {
-                    $this->processUrl($uri);
+            $enabledProcessChildrenUri = !$asset->isBinary() && $asset->getContent();
+            if ($enabledProcessChildrenUri) {
+                $this->dispatcher->dispatch(EventStore::COLLECT_ASSET_URL, new CollectAssetUriEvent($uri, $asset, $this));
+                foreach ($asset->getAssetUris() as $uri) {
+                    $this->processUri($uri);
                 }
-                $this->dispatcher->dispatch(EventStore::COLLECTED_ASSET_URL, new CollectedAssetUrlEvent($uri, $asset, $this));
+                $this->dispatcher->dispatch(EventStore::COLLECTED_ASSET_URL, new CollectedAssetUriEvent($uri, $asset, $this));
             }
-            $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUrlEvent($uri, $asset, $this));
+            $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUriEvent($uri, $asset, $this));
             //采集周期结束之后处理其它链接
-            if ($enabledProcessChildrenUrl) {
-                foreach ($asset->getPageUrls() as $uri) {
-                    $this->processUrl($uri);
+            if ($enabledProcessChildrenUri) {
+                foreach ($asset->getPageUris() as $uri) {
+                    $this->processUri($uri);
                 }
             }
         }
@@ -213,6 +214,6 @@ class Spider
      */
     public function run($uri)
     {
-        $this->processUrl(new Uri($uri));
+        $this->processUri(new Uri($uri));
     }
 }

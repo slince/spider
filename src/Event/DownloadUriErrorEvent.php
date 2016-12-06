@@ -9,7 +9,7 @@ use Slince\Event\Event;
 use Slince\Spider\EventStore;
 use Slince\Spider\Uri;
 
-class FilterUrlEvent extends Event
+class DownloadUriErrorEvent extends Event
 {
     /**
      * 事件名称
@@ -53,7 +53,7 @@ class FilterUrlEvent extends Event
      * 获取当前url
      * @return Uri
      */
-    public function getUrl()
+    public function getUri()
     {
         return $this->url;
     }

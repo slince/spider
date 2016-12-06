@@ -13,11 +13,11 @@ class Css extends Asset
      * 获取所有资源链接
      * @return array
      */
-    public function getAssetUrls()
+    public function getAssetUris()
     {
-        return $this->handleRawUrls(array_merge(
-            $this->extractCssUrls($this->content),
-            $this->extractImageUrls($this->content)
+        return $this->handleRawUris(array_merge(
+            $this->extractCssUris($this->content),
+            $this->extractImageUris($this->content)
         ));
     }
     /**
@@ -27,7 +27,7 @@ class Css extends Asset
      * @return array
      * jpg|jpeg|gif|png|bmp|svg|ttf|eot|woff|otf|woff2
      */
-    public function extractImageUrls($content)
+    public function extractImageUris($content)
     {
         preg_match_all("/url\s*\((.*\.(?:jpg|jpeg|gif|png|bmp|svg|ttf|eot|woff|otf|woff2).*)\)/Ui", $content, $matches);
         $uris = empty($matches[1]) ? [] : $matches[1];
@@ -42,7 +42,7 @@ class Css extends Asset
      * @param $content
      * @return array
      */
-    public function extractCssUrls($content)
+    public function extractCssUris($content)
     {
         preg_match_all("/url\s*\((.*\.css.*)\)/Ui", $content, $matches);
         $uris = empty($matches[1]) ? [] : $matches[1];

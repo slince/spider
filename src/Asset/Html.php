@@ -65,20 +65,20 @@ class Html extends Asset
     /**
      * {@inheritdoc}
      */
-    public function getPageUrls()
+    public function getPageUris()
     {
-        return $this->handleRawUrls($this->extractPageUrls($this->content));
+        return $this->handleRawUris($this->extractPageUris($this->content));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAssetUrls()
+    public function getAssetUris()
     {
-        return $this->handleRawUrls(array_merge(
-            $this->extractCssUrls($this->content),
-            $this->extractImageUrls($this->content),
-            $this->extractScriptUrls($this->content)
+        return $this->handleRawUris(array_merge(
+            $this->extractCssUris($this->content),
+            $this->extractImageUris($this->content),
+            $this->extractScriptUris($this->content)
         ));
     }
 
@@ -87,7 +87,7 @@ class Html extends Asset
      * @param $content
      * @return array
      */
-    protected function extractPageUrls($content)
+    protected function extractPageUris($content)
     {
         static::getDomParser()->load($content);
         $aNodes = static::getDomParser()->find('a');
@@ -101,7 +101,7 @@ class Html extends Asset
      * @param $content
      * @return array
      */
-    protected function extractImageUrls($content)
+    protected function extractImageUris($content)
     {
         static::getDomParser()->load($content);
         $imgNodes = static::getDomParser()->find('img');
@@ -115,7 +115,7 @@ class Html extends Asset
      * @param $content
      * @return array
      */
-    protected function extractCssUrls($content)
+    protected function extractCssUris($content)
     {
         static::getDomParser()->load($content);
         $cssNodes = static::getDomParser()->find("link");
@@ -129,7 +129,7 @@ class Html extends Asset
      * @param $content
      * @return array
      */
-    protected function extractScriptUrls($content)
+    protected function extractScriptUris($content)
     {
         static::getDomParser()->load($content);
         $scriptNodes = static::getDomParser()->find('script');

@@ -13,7 +13,7 @@ class Pdf extends Asset
      * 获取所有资源链接
      * @return array
      */
-    public function getAssetUrls()
+    public function getAssetUris()
     {
         return [];
     }

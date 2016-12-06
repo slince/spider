@@ -51,7 +51,7 @@ class Command extends BaseCommand
         }
         $this->resolveSpiderFilter();
         //读取上次访问路径
-        $this->readTraceReport();
+//        $this->readTraceReport();
     }
 
     /**
@@ -89,11 +89,11 @@ class Command extends BaseCommand
     {
         if (isset($this->configs['filters']['url'])) {
             $filters = $this->configs['filters']['url'];
-            if (isset($filters['whitUrlPatterns'])) {
-                $this->getSpider()->setWhiteUrlPatterns($filters['whitUrlPatterns']);
+            if (isset($filters['whitUriPatterns'])) {
+                $this->getSpider()->setWhiteUriPatterns($filters['whitUriPatterns']);
             }
             if (isset($filters['blackPatterns'])) {
-                $this->getSpider()->setBlackUrlPatterns($filters['blackPatterns']);
+                $this->getSpider()->setBlackUriPatterns($filters['blackPatterns']);
             }
         }
     }

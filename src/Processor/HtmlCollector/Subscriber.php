@@ -7,8 +7,8 @@ namespace Slince\Spider\Processor\HtmlCollector;
 
 use Slince\Event\SubscriberInterface;
 use Slince\Spider\EventStore;
-use Slince\Spider\Event\CollectedUrlEvent;
-use Slince\Spider\Event\FilterUrlEvent;
+use Slince\Spider\Event\CollectedUriEvent;
+use Slince\Spider\Event\FilterUriEvent;
 
 class Subscriber implements SubscriberInterface
 {
@@ -25,28 +25,28 @@ class Subscriber implements SubscriberInterface
     public function getEvents()
     {
         return [
-            EventStore::FILTER_URL => 'onFilterUrl',
-            EventStore::COLLECTED_URL => 'onCollectedUrl'
+            EventStore::FILTER_URL => 'onFilterUri',
+            EventStore::COLLECTED_URL => 'onCollectedUri'
         ];
     }
 
     /**
      * 过滤链接事件
-     * @param FilterUrlEvent $event
+     * @param FilterUriEvent $event
      */
-    public function onFilterUrl(FilterUrlEvent $event)
+    public function onFilterUri(FilterUriEvent $event)
     {
-        $uri = $event->getUrl();
-        if (!$this->htmlCollector->checkUrlEnabled($uri)) {
+        $uri = $event->getUri();
+        if (!$this->htmlCollector->checkUriEnabled($uri)) {
             $event->skipThis();
         }
     }
 
     /**
      * 采集完毕
-     * @param CollectedUrlEvent $event
+     * @param CollectedUriEvent $event
      */
-    public function onCollectedUrl(CollectedUrlEvent $event)
+    public function onCollectedUri(CollectedUriEvent $event)
     {
         $asset = $event->getAsset();
         $this->htmlCollector->saveAsset($asset);

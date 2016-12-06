@@ -10,7 +10,7 @@ use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\EventStore;
 use Slince\Spider\Uri;
 
-class CollectedUrlEvent extends Event
+class CollectedUriEvent extends Event
 {
     /**
      * 事件名称
@@ -41,7 +41,7 @@ class CollectedUrlEvent extends Event
      * 获取当前url
      * @return Uri
      */
-    public function getUrl()
+    public function getUri()
     {
         return $this->url;
     }

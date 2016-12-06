@@ -13,7 +13,7 @@ interface AssetInterface
      * 获取资源url
      * @return Uri
      */
-    public function getUrl();
+    public function getUri();
 
     /**
      * 资源内容
@@ -37,13 +37,13 @@ interface AssetInterface
      * 获取页面链接
      * @return Uri[]
      */
-    public function getPageUrls();
+    public function getPageUris();
 
     /**
      * 获取子资源url
      * @return Uri[]
      */
-    public function getAssetUrls();
+    public function getAssetUris();
 
     /**
      * 是否是二进制资源

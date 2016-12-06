@@ -5,9 +5,9 @@
  */
 namespace Slince\Spider\Command;
 
-use Slince\Spider\Event\CollectedUrlEvent;
-use Slince\Spider\Event\CollectUrlEvent;
-use Slince\Spider\Event\DownloadUrlErrorEvent;
+use Slince\Spider\Event\CollectedUriEvent;
+use Slince\Spider\Event\CollectUriEvent;
+use Slince\Spider\Event\DownloadUriErrorEvent;
 use Slince\Spider\EventStore;
 use Slince\Spider\Exception\InvalidArgumentException;
 use Slince\Spider\Processor\HtmlCollector\HtmlCollector;
@@ -65,8 +65,8 @@ class CollectCommand extends Command
         $collectorConfigs = $this->configs->get('collector');
         $savePath = isset($collectorConfigs['savePath']) ? $collectorConfigs['savePath'] : getcwd();
         $allowHosts = isset($collectorConfigs['allowHosts']) ? $collectorConfigs['allowHosts'] : [];
-        $pageUrlPatterns = isset($collectorConfigs['pageUrlPatterns']) ? $collectorConfigs['pageUrlPatterns'] : [];
-        $this->htmlCollector = new HtmlCollector($this->getSpider(), $savePath, $allowHosts, $pageUrlPatterns);
+        $pageUriPatterns = isset($collectorConfigs['pageUriPatterns']) ? $collectorConfigs['pageUriPatterns'] : [];
+        $this->htmlCollector = new HtmlCollector($this->getSpider(), $savePath, $allowHosts, $pageUriPatterns);
         $this->htmlCollector->mount(); //挂载到蜘蛛上
         $this->bindEventsForUi();
     }
@@ -79,8 +79,8 @@ class CollectCommand extends Command
         $dispatcher = $this->getSpider()->getDispatcher();
 
         //开始处理某个链接
-        $dispatcher->bind(EventStore::COLLECT_URL, function(CollectUrlEvent $event){
-            $uri = $event->getUrl();
+        $dispatcher->bind(EventStore::COLLECT_URL, function(CollectUriEvent $event){
+            $uri = $event->getUri();
             $this->output->writeln(PHP_EOL);
             $this->output->writeln(strval($uri));
             $progressBar = new ProgressBar($this->output, 100);
@@ -90,15 +90,15 @@ class CollectCommand extends Command
         });
 
         //下载失败
-        $dispatcher->bind(EventStore::DOWNLOAD_URL_ERROR, function (DownloadUrlErrorEvent $event){
-            $uri = $event->getUrl();
+        $dispatcher->bind(EventStore::DOWNLOAD_URL_ERROR, function (DownloadUriErrorEvent $event){
+            $uri = $event->getUri();
             $this->output->writeln("Download Error");
         });
 
         //处理完成
-        $dispatcher->bind(EventStore::COLLECTED_URL, function (CollectedUrlEvent $event){
+        $dispatcher->bind(EventStore::COLLECTED_URL, function (CollectedUriEvent $event){
             $asset = $event->getAsset();
-            $uri = $asset->getUrl();
+            $uri = $asset->getUri();
             $progressBar = $uri->getParameter('progressBar');
             $progressBar->advance(50);
             $progressBar->finish();

@@ -11,6 +11,10 @@
         }
     },
     "collector": {
-        "savePath": "./assets"
+        "savePath": "./assets",
+        "pageUrlPatterns": {
+            "#products/\\d+#": "product",
+            "#categories/.*#": "category"
+        }
     }
 }

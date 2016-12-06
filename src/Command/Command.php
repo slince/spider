@@ -8,6 +8,8 @@ namespace Slince\Spider\Command;
 use Slince\Config\Config;
 use Slince\Spider\Exception\InvalidArgumentException;
 use Slince\Spider\Spider;
+use Slince\Spider\TraceReport;
+use Slince\Spider\Utility;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -48,6 +50,27 @@ class Command extends BaseCommand
             }
         }
         $this->resolveSpiderFilter();
+        //读取上次访问路径
+        $this->readTraceReport();
+    }
+
+    /**
+     * 读取访问路径
+     */
+    protected function readTraceReport()
+    {
+        $filePath = getcwd(). DIRECTORY_SEPARATOR . md5(TraceReport::class);
+        if (file_exists($filePath) && ($content = file_get_contents($filePath))) {
+            $instance = unserialize($content);
+            TraceReport::setInstance($instance);
+        }
+    }
+
+    public function __destruct()
+    {
+        //记住已经访问的路径
+        $filesystem = Utility::getFilesystem();
+        $filesystem->dumpFile(getcwd() . DIRECTORY_SEPARATOR . md5(TraceReport::class), serialize(TraceReport::instance()));
     }
 
     /**

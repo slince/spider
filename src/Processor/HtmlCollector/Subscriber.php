@@ -6,6 +6,7 @@
 namespace Slince\Spider\Processor\HtmlCollector;
 
 use Slince\Spider\Asset\Html;
+use Slince\Spider\Event\DownloadUrlErrorEvent;
 use Slince\Spider\Url;
 use Slince\Event\SubscriberInterface;
 use Slince\Spider\Event\CollectedUrlEvent;
@@ -28,7 +29,7 @@ class Subscriber implements SubscriberInterface
     {
         return [
             EventStore::FILTER_URL => 'onFilterUrl',
-            EventStore::COLLECTED_URL => 'onCollectedUrl',
+            EventStore::COLLECTED_URL => 'onCollectedUrl'
         ];
     }
 
@@ -62,6 +63,7 @@ class Subscriber implements SubscriberInterface
         //静态资源所属父级repository的content要进行替换
         $parentAsset = $asset->getUrl()->getParameter('page');
         if (!is_null($parentAsset) && !$asset instanceof Html) {
+            //调整父级内容
             $parentAsset->setContent(preg_replace(
                 "#(?:http)?s?:?(?://)?{$asset->getUrl()->getHost()}#",
                 '',
@@ -90,7 +92,7 @@ class Subscriber implements SubscriberInterface
     protected function checkPageUrlPatterns(Url $url)
     {
         $result = true;
-        foreach ($this->htmlCollector->getPageUrlPatterns() as $urlPattern) {
+        foreach ($this->htmlCollector->getPageUrlPatterns() as $urlPattern => $template) {
             if (preg_match($urlPattern, $url->getUrlString())) {
                 //设置模式
                 $url->setParameter('pageUrlPattern', $urlPattern);

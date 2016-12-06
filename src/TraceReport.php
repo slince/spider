@@ -10,18 +10,24 @@ use ArrayObject;
 class TraceReport
 {
     /**
-     * @var array
+     * 路径存储
+     * @var ArrayObject[]
      */
-//    protected
-    static $reports;
+    protected $reports;
+
+    /**
+     * 当前路径实例
+     * @var TraceReport
+     */
+    protected static $instance;
 
     /**
      * 记录爬虫访问过的链接
      * @param Url $url
      */
-    static function report(Url $url)
+    public function report(Url $url)
     {
-        $storage = static::getHostStorage($url->getHost());
+        $storage = $this->getHostStorage($url->getHost());
         $storage[static::hash($url)] = $url;
     }
 
@@ -29,9 +35,9 @@ class TraceReport
      * @param Url $url
      * @return bool
      */
-    static function isVisited(Url $url)
+    public function isVisited(Url $url)
     {
-        return isset(static::getHostStorage($url->getHost())[static::hash($url)]);
+        return isset($this->getHostStorage($url->getHost())[static::hash($url)]);
     }
 
     /**
@@ -39,20 +45,41 @@ class TraceReport
      * @param Url $url
      * @return string
      */
-    protected static function hash(Url $url)
+    protected function hash(Url $url)
     {
         return md5($url->getUrlString());
     }
 
     /**
      * @param string $host
-     * @return array
+     * @return ArrayObject
      */
-    protected static function getHostStorage($host)
+    protected function getHostStorage($host)
     {
-        if (!isset(static::$reports[$host])) {
-            static::$reports[$host] = new ArrayObject();
+        if (!isset($this->reports[$host])) {
+            $this->reports[$host] = new ArrayObject();
         }
-        return static::$reports[$host];
+        return $this->reports[$host];
+    }
+
+    /**
+     * 获取报告
+     * @return TraceReport
+     */
+    public static function instance()
+    {
+        if (is_null(static::$instance)) {
+            static::$instance = new static();
+        }
+        return static::$instance;
+    }
+
+    /**
+     * 设置当前路径报告
+     * @param TraceReport $instance
+     */
+    public static function setInstance(TraceReport $instance)
+    {
+        static::$instance = $instance;
     }
 }

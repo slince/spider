@@ -7,6 +7,7 @@ namespace Slince\Spider\Command;
 
 use Slince\Spider\Event\CollectedUrlEvent;
 use Slince\Spider\Event\CollectUrlEvent;
+use Slince\Spider\Event\DownloadUrlErrorEvent;
 use Slince\Spider\EventStore;
 use Slince\Spider\Exception\InvalidArgumentException;
 use Slince\Spider\Processor\HtmlCollector\HtmlCollector;
@@ -76,6 +77,7 @@ class CollectCommand extends Command
     protected function bindEventsForUi()
     {
         $dispatcher = $this->getSpider()->getDispatcher();
+
         //开始处理某个链接
         $dispatcher->bind(EventStore::COLLECT_URL, function(CollectUrlEvent $event){
             $url = $event->getUrl();
@@ -85,6 +87,12 @@ class CollectCommand extends Command
             $progressBar->start();
             //临时存储该链接对应的进度条
             $url->setParameter('progressBar', $progressBar);
+        });
+
+        //下载失败
+        $dispatcher->bind(EventStore::DOWNLOAD_URL_ERROR, function (DownloadUrlErrorEvent $event){
+            $url = $event->getUrl();
+            $this->output->writeln("Download Error");
         });
 
         //处理完成

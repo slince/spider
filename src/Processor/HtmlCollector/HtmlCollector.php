@@ -9,6 +9,7 @@ use Slince\Spider\Asset\Asset;
 use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\Processor\Processor;
 use Slince\Spider\Spider;
+use Slince\Spider\Utility;
 use Symfony\Component\Filesystem\Filesystem;
 
 class HtmlCollector extends Processor
@@ -52,7 +53,7 @@ class HtmlCollector extends Processor
         $this->savePath = trim($savePath, '\/') . DIRECTORY_SEPARATOR;
         $this->allowHosts = $allowHosts;
         $this->pageUrlPatterns = $pageUrlPatterns;
-        $this->filesystem = new Filesystem();
+        $this->filesystem = Utility::getFilesystem();
     }
 
     /**

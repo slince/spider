@@ -36,4 +36,11 @@ class EventStore
      * @var string
      */
     const COLLECTED_URL= 'collectedUrl';
+
+    /**
+     * 链接下载失败
+     * @var string
+     */
+    const DOWNLOAD_URL_ERROR= 'downloadUrlError';
+
 }

@@ -9,9 +9,11 @@ use Slince\Event\Dispatcher;
 use Slince\Spider\Asset\Asset;
 use Slince\Spider\Event\CollectAssetUrlEvent;
 use Slince\Spider\Event\CollectedAssetUrlEvent;
+use Slince\Spider\Event\DownloadUrlErrorEvent;
 use Slince\Spider\Event\FilterUrlEvent;
 use Slince\Spider\Event\CollectUrlEvent;
 use Slince\Spider\Event\CollectedUrlEvent;
+use Slince\Spider\Exception\RuntimeException;
 
 class Spider
 {
@@ -135,7 +137,7 @@ class Spider
     protected function filterUrl(Url $url)
     {
         //junk url或者已经访问的链接不再处理
-        if (preg_match(self::$junkUrlPattern, $url->getRawUrl()) || TraceReport::isVisited($url)) {
+        if (preg_match(self::$junkUrlPattern, $url->getRawUrl()) || TraceReport::instance()->isVisited($url)) {
             return false;
         }
         //如果是白名单规则一定通过
@@ -170,15 +172,21 @@ class Spider
     /**
      * 处理链接资源
      * @param Url $url
+     * @return boolean
      */
     protected function processUrl(Url $url)
     {
         if ($this->filterUrl($url)) {
             $this->dispatcher->dispatch(EventStore::COLLECT_URL, new CollectUrlEvent($url, $this));
-            $asset = $this->downloader->download($url);
+            TraceReport::instance()->report($url);
+            try {
+                $asset = $this->downloader->download($url);
+            } catch (RuntimeException $exception) {
+                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URL_ERROR, new DownloadUrlErrorEvent($url, $this));
+                return false;
+            }
             //记录已采集的链接
             $this->assets[] = $asset;
-            TraceReport::report($url);
             //处理该链接下的资源
             $enabledProcessChildrenUrl = !$asset->isBinary() && $asset->getContent();
             if ($enabledProcessChildrenUrl) {
@@ -196,6 +204,7 @@ class Spider
                 }
             }
         }
+        return true;
     }
 
     /**

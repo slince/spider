@@ -102,11 +102,9 @@ class AssetFactory
                 $contentType = 'text/html';
             }
         } else {
-            if (!$extension) {
-                try {
-                    $extension = Mime::getExtensionsFromMime($contentType)[0];
-                } catch (MimeIsNotFound $exception) {}
-            }
+            try {
+                $extension = Mime::getExtensionsFromMime($contentType)[0];
+            } catch (MimeIsNotFound $exception) {}
         }
         return [$contentType, $extension];
     }

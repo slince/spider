@@ -1,5 +1,5 @@
 {
-    "entrance": "http://127.0.0.1:8080/index.html",
+    "entrance": "http://htmlstream.com/preview/unify-v1.9.6/index.html",
     "filters": {
         "url": {
             "whitUrlPatterns": [
@@ -15,6 +15,7 @@
         "pageUrlPatterns": {
             "#products/\\d+#": "product",
             "#categories/.*#": "category"
-        }
+        },
+        "allowHosts": ["htmlstream.com"]
     }
 }

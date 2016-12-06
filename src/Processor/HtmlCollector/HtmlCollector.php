@@ -91,7 +91,7 @@ class HtmlCollector extends Processor
         if ($this->allowHosts) {
             $allowHostsPattern = $this->makeAllowHostsPattern($this->allowHosts);
             //如果当前链接host不符合允许的host则跳过
-            if (!preg_match($url->getHost(), $allowHostsPattern)) {
+            if (!preg_match($allowHostsPattern, $url->getHost())) {
                 return false;
             }
         }
@@ -153,6 +153,11 @@ class HtmlCollector extends Processor
         $parentAsset = $asset->getUrl()->getParameter('page');
         if (!is_null($parentAsset) && !$asset instanceof Html) {
             //调整父级内容
+//            $parentAsset->setContent(preg_replace(
+//                "#(?:http)?s?:?(?://)?{$asset->getUrl()->getHost()}#",
+//                '',
+//                $parentAsset->getContent()
+//            ));
             $parentAsset->setContent(preg_replace(
                 "#(?:http)?s?:?(?://)?{$asset->getUrl()->getHost()}#",
                 '',
@@ -207,6 +212,6 @@ class HtmlCollector extends Processor
                 }
             }
         }
-        return $filename  . ".{$extension}";
+        return $filename . ".{$extension}";
     }
 }

@@ -166,7 +166,7 @@ class Asset implements AssetInterface
             $newRawUrl = $rawUrl;
         } else {
             if ($rawUrl{0} !== '/') {
-                if ($this->getExtension() == '') {
+                if (pathinfo($this->getUrl()->getPath(), PATHINFO_EXTENSION) == '') {
                     $pathname = rtrim($this->url->getPath(), '/') . '/' . $rawUrl;
                 } else {
                     $pathname = dirname($this->url->getPath()) . '/' . $rawUrl;

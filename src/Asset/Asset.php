@@ -90,20 +90,23 @@ class Asset implements AssetInterface
     }
 
     /**
-     * @param mixed $contentType
+     * {@inheritdoc}
      */
     public function setContentType($contentType)
     {
         $this->contentType = $contentType;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getExtension()
     {
         return $this->extension;
     }
 
     /**
-     * @param string $extension
+     * {@inheritdoc}
      */
     public function setExtension($extension)
     {
@@ -158,11 +161,12 @@ class Asset implements AssetInterface
      */
     protected function handleRawUrl($rawUrl)
     {
+        // http://www.domain.com 或者 //www.domain.com
         if (strpos($rawUrl, 'http') !== false || substr($rawUrl, 0, 2) == '//') {
             $newRawUrl = $rawUrl;
         } else {
             if ($rawUrl{0} !== '/') {
-                if ($this->url->getParameter('extension') == '') {
+                if ($this->getExtension() == '') {
                     $pathname = rtrim($this->url->getPath(), '/') . '/' . $rawUrl;
                 } else {
                     $pathname = dirname($this->url->getPath()) . '/' . $rawUrl;
@@ -171,7 +175,6 @@ class Asset implements AssetInterface
                 $pathname = $rawUrl;
             }
             $newRawUrl = $this->url->getOrigin() . $pathname;
-            ;
         }
         $url = Url::createFromUrl($newRawUrl);
         $url->setRawUrl($rawUrl);

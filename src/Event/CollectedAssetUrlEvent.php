@@ -30,7 +30,6 @@ class CollectedAssetUrlEvent extends Event
      */
     protected $ownerAsset;
 
-
     public function __construct(Url $url, AssetInterface $ownerAsset, $subject, array $arguments = [])
     {
         $this->url = $url;

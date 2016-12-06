@@ -5,6 +5,7 @@
  */
 namespace Slince\Spider\Processor\HtmlCollector;
 
+use Slince\Spider\Asset\Html;
 use Slince\Spider\Url;
 use Slince\Event\SubscriberInterface;
 use Slince\Spider\Event\CollectedUrlEvent;
@@ -58,6 +59,15 @@ class Subscriber implements SubscriberInterface
     public function onCollectedUrl(CollectedUrlEvent $event)
     {
         $asset = $event->getAsset();
+        //静态资源所属父级repository的content要进行替换
+        $parentAsset = $asset->getUrl()->getParameter('page');
+        if (!is_null($parentAsset) && !$asset instanceof Html) {
+            $parentAsset->setContent(preg_replace(
+                "#(?:http)?s?:?(?://)?{$asset->getUrl()->getHost()}#",
+                '',
+                $parentAsset->getContent()
+            ));
+        }
         $this->htmlCollector->getFilesystem()->dumpFile($this->htmlCollector->generateFileName($asset), $asset->getContent());
     }
 

@@ -6,7 +6,6 @@
 namespace Slince\Spider\Asset;
 
 use HtmlParser\ParserDom;
-use Slince\Spider\Url;
 
 class Html extends Asset
 {

@@ -12,7 +12,8 @@ class TraceReport
     /**
      * @var array
      */
-    protected static $reports;
+//    protected
+    static $reports;
 
     /**
      * 记录爬虫访问过的链接
@@ -40,7 +41,7 @@ class TraceReport
      */
     protected static function hash(Url $url)
     {
-        return md5($url->getRawUrl());
+        return md5($url->getUrlString());
     }
 
     /**

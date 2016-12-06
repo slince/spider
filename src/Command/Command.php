@@ -66,13 +66,6 @@ class Command extends BaseCommand
         }
     }
 
-    public function __destruct()
-    {
-        //记住已经访问的路径
-        $filesystem = Utility::getFilesystem();
-        $filesystem->dumpFile(getcwd() . DIRECTORY_SEPARATOR . md5(TraceReport::class), serialize(TraceReport::instance()));
-    }
-
     /**
      * @return Spider
      */
@@ -105,3 +98,9 @@ class Command extends BaseCommand
         }
     }
 }
+//脚本结束记录已访问路径
+register_shutdown_function(function(){
+    //记住已经访问的路径
+    $filesystem = Utility::getFilesystem();
+    $filesystem->dumpFile(getcwd() . DIRECTORY_SEPARATOR . md5(TraceReport::class), serialize(TraceReport::instance()));
+});

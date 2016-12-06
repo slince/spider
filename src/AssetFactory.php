@@ -93,8 +93,8 @@ class AssetFactory
         $contentTypeString = $response->getHeaderLine('content-type');
         $contentType = strpos($contentTypeString, ';') === false
             ? trim($contentTypeString) : trim(explode(';', $contentTypeString)[0]);
+        $extension = pathinfo($url->getPath(), PATHINFO_EXTENSION);
         if (!$contentType) {
-            $extension = pathinfo($url->getPath(), PATHINFO_EXTENSION);
             if ($extension) {
                 $contentType = Mime::getMimeFromExtension($extension);
             } else {
@@ -102,10 +102,10 @@ class AssetFactory
                 $contentType = 'text/html';
             }
         } else {
-            try {
-                $extension = Mime::getExtensionsFromMime($contentType)[0];
-            } catch (MimeIsNotFound $exception) {
-                $extension = pathinfo($url->getPath(), PATHINFO_EXTENSION);
+            if (!$extension) {
+                try {
+                    $extension = Mime::getExtensionsFromMime($contentType)[0];
+                } catch (MimeIsNotFound $exception) {}
             }
         }
         return [$contentType, $extension];

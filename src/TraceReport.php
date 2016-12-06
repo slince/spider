@@ -28,7 +28,7 @@ class TraceReport
     public function report(Url $url)
     {
         $storage = $this->getHostStorage($url->getHost());
-        $storage[static::hash($url)] = $url;
+        $storage[static::hash($url)] = $url->getUrlString();
     }
 
     /**

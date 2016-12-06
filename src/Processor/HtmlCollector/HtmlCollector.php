@@ -5,11 +5,12 @@
  */
 namespace Slince\Spider\Processor\HtmlCollector;
 
-use Slince\Spider\Asset\Asset;
 use Slince\Spider\Asset\AssetInterface;
 use Slince\Spider\Processor\Processor;
 use Slince\Spider\Spider;
+use Slince\Spider\Url;
 use Slince\Spider\Utility;
+use Slince\Spider\Asset\Html;
 use Symfony\Component\Filesystem\Filesystem;
 
 class HtmlCollector extends Processor
@@ -57,14 +58,6 @@ class HtmlCollector extends Processor
     }
 
     /**
-     * @return Filesystem
-     */
-    public function getFilesystem()
-    {
-        return $this->filesystem;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function mount()
@@ -89,21 +82,91 @@ class HtmlCollector extends Processor
     }
 
     /**
+     * 检查链接是否继续
+     * @param Url $url
+     * @return boolean
+     */
+    public function checkUrlEnabled(Url $url)
+    {
+        if ($this->allowHosts) {
+            $allowHostsPattern = $this->makeAllowHostsPattern($this->allowHosts);
+            //如果当前链接host不符合允许的host则跳过
+            if (!preg_match($url->getHost(), $allowHostsPattern)) {
+                return false;
+            }
+        }
+        //如果是重复页面正则并且已经下载过则不再下载
+        if (!$this->checkPageUrlPatterns($url)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 生成host验证规则
+     * @param $allowHosts
+     * @return string
+     */
+    protected function makeAllowHostsPattern($allowHosts)
+    {
+        return '#(' . implode('|', $allowHosts) . ')#';
+    }
+
+    /**
      * 获取某个页面正则已经  下载的次数
      * @param $pageUrlPattern
      * @return int|mixed
      */
-    public function getPageUrlDownloadTime($pageUrlPattern)
+    protected function getPageUrlDownloadTime($pageUrlPattern)
     {
         return isset($this->pageUrlPatternDownloadTimes[$pageUrlPattern]) ? $this->pageUrlPatternDownloadTimes[$pageUrlPattern] : 0;
     }
 
     /**
-     * @return string
+     * 检查是否符合页面正则
+     * @param Url $url
+     * @return bool
      */
-    public function getSavePath()
+    protected function checkPageUrlPatterns(Url $url)
     {
-        return $this->savePath;
+        $result = true;
+        foreach ($this->pageUrlPatterns as $urlPattern => $template) {
+            if (preg_match($urlPattern, $url->getUrlString())) {
+                //设置模式
+                $url->setParameter('pageUrlPattern', $urlPattern);
+                if ($this->getPageUrlDownloadTime($urlPattern) > 1) {
+                    $result = false;
+                    break;
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * 持久化资源
+     * @param AssetInterface $asset
+     */
+    public function saveAsset(AssetInterface $asset)
+    {
+        //静态资源所属父级repository的content要进行替换
+        $parentAsset = $asset->getUrl()->getParameter('page');
+        if (!is_null($parentAsset) && !$asset instanceof Html) {
+            //调整父级内容
+            $parentAsset->setContent(preg_replace(
+                "#(?:http)?s?:?(?://)?{$asset->getUrl()->getHost()}#",
+                '',
+                $parentAsset->getContent()
+            ));
+        }
+        $this->filesystem->dumpFile($this->generateFileName($asset), $asset->getContent());
+        //如果有页面正则则维护页面信息
+        if ($pageUrlPattern = $asset->getUrl()->getParameter('pageUrlPattern')) {
+            if (!isset($this->pageUrlPatternDownloadTimes[$pageUrlPattern])) {
+                $this->pageUrlPatternDownloadTimes[$pageUrlPattern] = 0;
+            }
+            $this->pageUrlPatternDownloadTimes[$pageUrlPattern] ++;
+        }
     }
 
     /**
@@ -111,9 +174,9 @@ class HtmlCollector extends Processor
      * @param AssetInterface $asset
      * @return string
      */
-    public function generateFileName(AssetInterface $asset)
+    protected function generateFileName(AssetInterface $asset)
     {
-        $basePath = rtrim($this->getSavePath() . dirname($asset->getUrl()->getPath()), '\\/') . DIRECTORY_SEPARATOR;
+        $basePath = rtrim($this->savePath . dirname($asset->getUrl()->getPath()), '\\/') . DIRECTORY_SEPARATOR;
         return $basePath . $this->getBasename($asset, $basePath);
     }
 

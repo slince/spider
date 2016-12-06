@@ -51,7 +51,7 @@ class Command extends BaseCommand
         }
         $this->resolveSpiderFilter();
         //读取上次访问路径
-//        $this->readTraceReport();
+        $this->readTraceReport();
     }
 
     /**

@@ -154,11 +154,6 @@ class HtmlCollector extends Processor
         $parentAsset = $asset->getUri()->getParameter('page');
         if (!is_null($parentAsset) && !$asset instanceof Html) {
             //调整父级内容
-//            $parentAsset->setContent(preg_replace(
-//                "#(?:http)?s?:?(?://)?{$asset->getUri()->getHost()}#",
-//                '',
-//                $parentAsset->getContent()
-//            ));
             $parentAsset->setContent(preg_replace(
                 "#(?:http)?s?:?(?://)?{$asset->getUri()->getHost()}#",
                 '',

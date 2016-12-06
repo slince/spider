@@ -161,22 +161,7 @@ class Asset implements AssetInterface
      */
     protected function handleRawUri($rawUri)
     {
-        // http://www.domain.com 或者 //www.domain.com
-        if (strpos($rawUri, 'http') !== false || substr($rawUri, 0, 2) == '//') {
-            $newRawUri = $rawUri;
-        } else {
-            if ($rawUri{0} !== '/') {
-                if (pathinfo($this->getUri()->getPath(), PATHINFO_EXTENSION) == '') {
-                    $pathname = rtrim($this->uri->getPath(), '/') . '/' . $rawUri;
-                } else {
-                    $pathname = dirname($this->uri->getPath()) . '/' . $rawUri;
-                }
-            } else {
-                $pathname = $rawUri;
-            }
-            $newRawUri = $this->uri->getOrigin() . $pathname;
-        }
-        $uri = new Uri($newRawUri);
+        $uri = Uri::resolve($this->uri, $rawUri);
         //将链接所属的repository记录下来
         $uri->setParameter('page', $this);
         return $uri;

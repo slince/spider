@@ -150,7 +150,7 @@ class Spider
             return false;
         }
         $filterUriEvent = new FilterUriEvent($uri, $this);
-        $this->dispatcher->dispatch(EventStore::FILTER_URL, $filterUriEvent);
+        $this->dispatcher->dispatch(EventStore::FILTER_URI, $filterUriEvent);
         return !$filterUriEvent->isSkipped();
     }
 
@@ -178,12 +178,12 @@ class Spider
     protected function processUri(Uri $uri)
     {
         if ($this->filterUri($uri)) {
-            $this->dispatcher->dispatch(EventStore::COLLECT_URL, new CollectUriEvent($uri, $this));
+            $this->dispatcher->dispatch(EventStore::COLLECT_URI, new CollectUriEvent($uri, $this));
             TraceReport::instance()->report($uri);
             try {
                 $asset = $this->downloader->download($uri);
             } catch (RuntimeException $exception) {
-                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URL_ERROR, new DownloadUriErrorEvent($uri, $this));
+                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URI_ERROR, new DownloadUriErrorEvent($uri, $this));
                 return false;
             }
             //记录已采集的链接
@@ -191,13 +191,13 @@ class Spider
             //处理该链接下的资源
             $enabledProcessChildrenUri = !$asset->isBinary() && $asset->getContent();
             if ($enabledProcessChildrenUri) {
-                $this->dispatcher->dispatch(EventStore::COLLECT_ASSET_URL, new CollectAssetUriEvent($uri, $asset, $this));
+                $this->dispatcher->dispatch(EventStore::COLLECT_ASSET_URI, new CollectAssetUriEvent($uri, $asset, $this));
                 foreach ($asset->getAssetUris() as $uri) {
                     $this->processUri($uri);
                 }
-                $this->dispatcher->dispatch(EventStore::COLLECTED_ASSET_URL, new CollectedAssetUriEvent($uri, $asset, $this));
+                $this->dispatcher->dispatch(EventStore::COLLECTED_ASSET_URI, new CollectedAssetUriEvent($uri, $asset, $this));
             }
-            $this->dispatcher->dispatch(EventStore::COLLECTED_URL, new CollectedUriEvent($uri, $asset, $this));
+            $this->dispatcher->dispatch(EventStore::COLLECTED_URI, new CollectedUriEvent($uri, $asset, $this));
             //采集周期结束之后处理其它链接
             if ($enabledProcessChildrenUri) {
                 foreach ($asset->getPageUris() as $uri) {

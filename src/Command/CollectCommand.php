@@ -79,7 +79,7 @@ class CollectCommand extends Command
         $dispatcher = $this->getSpider()->getDispatcher();
 
         //开始处理某个链接
-        $dispatcher->bind(EventStore::COLLECT_URL, function(CollectUriEvent $event){
+        $dispatcher->bind(EventStore::COLLECT_URI, function(CollectUriEvent $event){
             $uri = $event->getUri();
             $this->output->writeln(PHP_EOL);
             $this->output->writeln(strval($uri));
@@ -90,13 +90,13 @@ class CollectCommand extends Command
         });
 
         //下载失败
-        $dispatcher->bind(EventStore::DOWNLOAD_URL_ERROR, function (DownloadUriErrorEvent $event){
+        $dispatcher->bind(EventStore::DOWNLOAD_URI_ERROR, function (DownloadUriErrorEvent $event){
             $uri = $event->getUri();
             $this->output->writeln("Download Error");
         });
 
         //处理完成
-        $dispatcher->bind(EventStore::COLLECTED_URL, function (CollectedUriEvent $event){
+        $dispatcher->bind(EventStore::COLLECTED_URI, function (CollectedUriEvent $event){
             $asset = $event->getAsset();
             $uri = $asset->getUri();
             $progressBar = $uri->getParameter('progressBar');

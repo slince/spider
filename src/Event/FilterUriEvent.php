@@ -15,7 +15,7 @@ class FilterUriEvent extends Event
      * 事件名称
      * @var string
      */
-    const NAME = EventStore::FILTER_URL;
+    const NAME = EventStore::FILTER_URI;
 
     /**
      * 当前url

@@ -16,7 +16,7 @@ class CollectedUriEvent extends Event
      * 事件名称
      * @var string
      */
-    const NAME = EventStore::COLLECTED_URL;
+    const NAME = EventStore::COLLECTED_URI;
 
     /**
      * 当前url

@@ -25,8 +25,8 @@ class Subscriber implements SubscriberInterface
     public function getEvents()
     {
         return [
-            EventStore::FILTER_URL => 'onFilterUri',
-            EventStore::COLLECTED_URL => 'onCollectedUri'
+            EventStore::FILTER_URI => 'onFilterUri',
+            EventStore::COLLECTED_URI => 'onCollectedUri'
         ];
     }
 

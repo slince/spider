@@ -16,7 +16,7 @@ class CollectedAssetUriEvent extends Event
      * 事件名称
      * @var string
      */
-    const NAME = EventStore::COLLECTED_ASSET_URL;
+    const NAME = EventStore::COLLECTED_ASSET_URI;
 
     /**
      * 当前url

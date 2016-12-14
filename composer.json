@@ -33,11 +33,7 @@
             "Slince\\Spider\\Tests\\": "./test"
         }
     },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
-        }
-    }
-
+    "bin": [
+        "spider"
+    ]
 }

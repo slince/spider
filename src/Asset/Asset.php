@@ -147,8 +147,8 @@ class Asset implements AssetInterface
         $rawUris = array_unique($rawUris);
         $uris = [];
         foreach ($rawUris as $rawUri) {
-            if (!empty($rawUri)) {
-                $uris[] = $this->handleRawUri($rawUri);
+            if (!empty($rawUri) && $uri = $this->handleRawUri($rawUri)) {
+                $uris[] = $uri;
             }
         }
         return $uris;
@@ -157,11 +157,15 @@ class Asset implements AssetInterface
     /**
      * 处理原生url
      * @param $rawUri
-     * @return Uri
+     * @return Uri|false
      */
     protected function handleRawUri($rawUri)
     {
-        $uri = Uri::resolve($this->uri, $rawUri);
+        try {
+            $uri = Uri::resolve($this->uri, $rawUri);
+        } catch (\Exception $exception) {
+            return false; //非法链接直接跳过
+        }
         //将链接所属的repository记录下来
         $uri->setParameter('page', $this);
         return $uri;

@@ -1,5 +1,5 @@
 {
-    "entrance": "http://htmlstream.com/preview/unify-v1.9.6/index.html",
+    "entrance": "http://xin.njgwy.cn/",
     "filters": {
         "url": {
             "whitUrlPatterns": [
@@ -16,6 +16,6 @@
             "#products/\\d+#": "product",
             "#categories/.*#": "category"
         },
-        "allowHosts": ["htmlstream.com"]
+        "allowHosts": ["njgwy.cn"]
     }
 }

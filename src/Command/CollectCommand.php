@@ -37,6 +37,7 @@ class CollectCommand extends Command
 
     public function configure()
     {
+        parent::configure();
         $this->setName(static::COMMAND_NAME)
             ->addArgument('url', InputArgument::OPTIONAL, 'Entrance url,collector will collect from this link');
     }

@@ -11,7 +11,9 @@ use Slince\Spider\Spider;
 use Slince\Spider\TraceReport;
 use Slince\Spider\Utility;
 use Symfony\Component\Console\Command\Command as BaseCommand;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Command extends BaseCommand
@@ -50,8 +52,21 @@ class Command extends BaseCommand
             }
         }
         $this->resolveSpiderFilter();
-        //读取上次访问路径
-        $this->readTraceReport();
+        if ($input->getOption('record-history')) {
+            //脚本结束记录已访问路径
+            register_shutdown_function(function(){
+                //记住已经访问的路径
+                $filesystem = Utility::getFilesystem();
+                $filesystem->dumpFile(getcwd() . DIRECTORY_SEPARATOR . md5(TraceReport::class), serialize(TraceReport::instance()));
+            });
+            //读取上次访问路径
+            $this->readTraceReport();
+        }
+    }
+
+    public function configure()
+    {
+        $this->addOption('record-history', null, InputOption::VALUE_OPTIONAL, 'Record spider crawl history', 0);
     }
 
     /**
@@ -98,9 +113,3 @@ class Command extends BaseCommand
         }
     }
 }
-//脚本结束记录已访问路径
-register_shutdown_function(function(){
-    //记住已经访问的路径
-    $filesystem = Utility::getFilesystem();
-    $filesystem->dumpFile(getcwd() . DIRECTORY_SEPARATOR . md5(TraceReport::class), serialize(TraceReport::instance()));
-});

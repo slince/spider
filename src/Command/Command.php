@@ -5,6 +5,7 @@
  */
 namespace Slince\Spider\Command;
 
+use GuzzleHttp\Client;
 use Slince\Config\Config;
 use Slince\Spider\Exception\InvalidArgumentException;
 use Slince\Spider\Spider;
@@ -52,6 +53,8 @@ class Command extends BaseCommand
             }
         }
         $this->resolveSpiderFilter();
+        $this->prepareDownloader();
+        //设置记录历史
         if ($input->getOption('record-history')) {
             //脚本结束记录已访问路径
             register_shutdown_function(function(){
@@ -111,5 +114,14 @@ class Command extends BaseCommand
                 $this->getSpider()->setBlackUriPatterns($filters['blackPatterns']);
             }
         }
+    }
+
+    /**
+     * 准备下载器设置
+     */
+    protected function prepareDownloader()
+    {
+        $options = isset($this->configs['httpClient']) ? $this->configs['httpClient'] : [];
+        $this->spider->getDownloader()->setHttpClient(new Client($options));
     }
 }

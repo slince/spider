@@ -120,6 +120,14 @@ class Spider
     }
 
     /**
+     * @return Downloader
+     */
+    public function getDownloader()
+    {
+        return $this->downloader;
+    }
+
+    /**
      * 下载资源
      * @param Uri $uri
      * @return Asset

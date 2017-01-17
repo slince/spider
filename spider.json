@@ -1,5 +1,5 @@
 {
-    "entrance": "http://xin.njgwy.cn/",
+    "entrance": "https://htmlstream.com/preview/unify-v1.9.7",
     "filters": {
         "url": {
             "whitUrlPatterns": [
@@ -10,12 +10,13 @@
             ]
         }
     },
+    "httpClient": {
+        "verify": false
+    },
     "collector": {
         "savePath": "./assets",
         "pageUrlPatterns": {
-            "#products/\\d+#": "product",
-            "#categories/.*#": "category"
         },
-        "allowHosts": ["njgwy.cn"]
+        "allowHosts": ["htmlstream.com"]
     }
 }

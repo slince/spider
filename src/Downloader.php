@@ -16,11 +16,6 @@ class Downloader
      */
     protected $client;
 
-    public function __construct()
-    {
-        $this->client = $this->createHttpClient();
-    }
-
     /**
      * @param Uri $uri
      * @return AssetInterface
@@ -28,7 +23,7 @@ class Downloader
     public function download(Uri $uri)
     {
         try {
-            $response = $this->client->get($uri);
+            $response = $this->getHttpClient()->get($uri);
             $uri->setParameter('response', $response);
             if ($response->getStatusCode() == '200') {
                 return AssetFactory::createFromPsr7Response($response, $uri);
@@ -41,8 +36,20 @@ class Downloader
      * 创建请求客户端
      * @return Client
      */
-    protected function createHttpClient()
+    protected function getHttpClient()
     {
-        return new Client();
+        if (is_null($this->client)) {
+            $this->client = new Client();
+        }
+        return $this->client;
+    }
+
+    /**
+     * 设置请求客户端
+     * @param Client $client
+     */
+    public function setHttpClient(Client $client)
+    {
+        $this->client = $client;
     }
 }

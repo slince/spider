@@ -36,6 +36,14 @@ class Asset implements AssetInterface
      */
     protected $extension;
 
+    /**
+     * 扩展名映射
+     * @var array
+     */
+    protected static $extensionMap = [
+        'jpeg' => 'jpg'
+    ];
+
     public function __construct(Uri $uri, $content, $contentType, $extension = null)
     {
         $this->uri = $uri;
@@ -44,9 +52,9 @@ class Asset implements AssetInterface
             $this->setContent($content);
         }
         if (is_null($extension)) {
-            $extension = Mime::getExtensionsFromMime($contentType);
+            $extension = Mime::getExtensionsFromMime($contentType)[0];
         }
-        $this->extension = $extension;
+        $this->setExtension($extension);
     }
 
     /**
@@ -110,6 +118,7 @@ class Asset implements AssetInterface
      */
     public function setExtension($extension)
     {
+        $extension = isset(static::$extensionMap[$extension]) ? static::$extensionMap[$extension] : $extension;
         $this->extension = $extension;
     }
 

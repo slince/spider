@@ -128,16 +128,6 @@ class Spider
     }
 
     /**
-     * 下载资源
-     * @param Uri $uri
-     * @return Asset
-     */
-    protected function download(Uri $uri)
-    {
-        return $this->downloader->download($uri);
-    }
-
-    /**
      * 过滤链接
      * @param Uri $uri
      * @return bool

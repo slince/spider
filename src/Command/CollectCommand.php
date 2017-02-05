@@ -63,13 +63,18 @@ class CollectCommand extends Command
      */
     protected function prepareCollect()
     {
-        $collectorConfigs = $this->configs->get('collector');
-        $savePath = isset($collectorConfigs['savePath']) ? $collectorConfigs['savePath'] : getcwd();
-        $allowHosts = isset($collectorConfigs['allowHosts']) ? $collectorConfigs['allowHosts'] : [];
-        $pageUriPatterns = isset($collectorConfigs['pageUriPatterns']) ? $collectorConfigs['pageUriPatterns'] : [];
-        $this->htmlCollector = new HtmlCollector($this->getSpider(), $savePath, $allowHosts, $pageUriPatterns);
-        $this->htmlCollector->mount(); //挂载到蜘蛛上
-        $this->bindEventsForUi();
+        try {
+            $collectorConfigs = $this->configs->get('collector');
+            $savePath = isset($collectorConfigs['savePath']) ? $collectorConfigs['savePath'] : getcwd();
+            $allowHosts = isset($collectorConfigs['allowHosts']) ? $collectorConfigs['allowHosts'] : [];
+            $pageUriPatterns = isset($collectorConfigs['pageUriPatterns']) ? $collectorConfigs['pageUriPatterns'] : [];
+            $autoAdjustLink = !empty($collectorConfigs['autoAdjustLink']); //修正链接
+            $this->htmlCollector = new HtmlCollector($this->getSpider(), $savePath, $allowHosts, $pageUriPatterns, $autoAdjustLink);
+            $this->htmlCollector->mount(); //挂载到蜘蛛上
+            $this->bindEventsForUi();
+        } catch (\Exception $exception) {
+            throw $exception;
+        }
     }
 
     /**
@@ -82,27 +87,20 @@ class CollectCommand extends Command
         //开始处理某个链接
         $dispatcher->bind(EventStore::COLLECT_URI, function(CollectUriEvent $event){
             $uri = $event->getUri();
-            $this->output->writeln(PHP_EOL);
-            $this->output->writeln(strval($uri));
-            $progressBar = new ProgressBar($this->output, 100);
-            $progressBar->start();
-            //临时存储该链接对应的进度条
-            $uri->setParameter('progressBar', $progressBar);
         });
 
         //下载失败
         $dispatcher->bind(EventStore::DOWNLOAD_URI_ERROR, function (DownloadUriErrorEvent $event){
             $uri = $event->getUri();
-            $this->output->writeln("Download Error");
+            @file_put_contents(getcwd() . '/error.log', $uri .PHP_EOL, FILE_APPEND);
+            $this->output->writeln(strval($uri) . " error");
         });
 
         //处理完成
         $dispatcher->bind(EventStore::COLLECTED_URI, function (CollectedUriEvent $event){
             $asset = $event->getAsset();
             $uri = $asset->getUri();
-            $progressBar = $uri->getParameter('progressBar');
-            $progressBar->advance(50);
-            $progressBar->finish();
+            $this->output->writeln(strval($uri) . " ok");
         });
     }
 }

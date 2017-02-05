@@ -48,13 +48,20 @@ class HtmlCollector extends Processor
      */
     protected $filesystem;
 
-    public function __construct(Spider $spider, $savePath, $allowHosts = [], $pageUriPatterns = [])
+    /**
+     * 是否自动调整链接
+     * @var bool
+     */
+    protected $autoAdjustLink = false;
+
+    public function __construct(Spider $spider, $savePath, $allowHosts = [], $pageUriPatterns = [], $autoAdjustLink = false)
     {
         parent::__construct($spider);
         $this->savePath = trim($savePath, '\/') . DIRECTORY_SEPARATOR;
         $this->allowHosts = $allowHosts;
         $this->pageUriPatterns = $pageUriPatterns;
         $this->filesystem = Utility::getFilesystem();
+        $this->autoAdjustLink = $autoAdjustLink;
     }
 
     /**
@@ -152,7 +159,7 @@ class HtmlCollector extends Processor
     {
         //静态资源所属父级repository的content要进行替换
         $parentAsset = $asset->getUri()->getParameter('page');
-        if (!is_null($parentAsset) && !$asset instanceof Html) {
+        if ($this->autoAdjustLink && !is_null($parentAsset) && !$asset instanceof Html) {
             //调整父级内容
             $parentAsset->setContent(preg_replace(
                 "#(?:http)?s?:?(?://)?{$asset->getUri()->getHost()}#",

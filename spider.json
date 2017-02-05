@@ -17,6 +17,7 @@
         "savePath": "./assets",
         "pageUrlPatterns": {
         },
-        "allowHosts": ["htmlstream.com"]
+        "allowHosts": ["htmlstream.com"],
+        "autoAdjustLink": false
     }
 }

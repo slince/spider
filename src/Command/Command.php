@@ -61,6 +61,7 @@ class Command extends BaseCommand
         }
         $this->resolveSpiderFilter();
         $this->prepareDownloader();
+        $this->prepareLogger();
         //设置记录历史
         if ($input->getOption('record-history')) {
             //脚本结束记录已访问路径
@@ -141,7 +142,6 @@ class Command extends BaseCommand
         $savePath = isset($this->configs['log']['savePath']) ? $this->configs['log']['savePath'] : getcwd() . '/logs/';
         $logger = new Logger($channel, [
             new StreamHandler($savePath . 'error.log', Logger::ERROR),
-            new StreamHandler($savePath . 'success.log', Logger::INFO),
         ]);
         $this->logger = $logger;
     }

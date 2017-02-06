@@ -31,7 +31,7 @@ class DownloadUriErrorEvent extends Event
 
     public function __construct(Uri $uri, $subject, array $arguments = [])
     {
-        $this->url = $uri;
+        $this->uri = $uri;
         parent::__construct(static::NAME, $subject, $arguments);
     }
 
@@ -55,6 +55,6 @@ class DownloadUriErrorEvent extends Event
      */
     public function getUri()
     {
-        return $this->url;
+        return $this->uri;
     }
 }

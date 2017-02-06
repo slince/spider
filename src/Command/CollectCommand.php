@@ -56,7 +56,7 @@ class CollectCommand extends Command
             throw new InvalidArgumentException("You should enter entrance url");
         }
         $this->getSpider()->run($entrance);
-
+        return true;
     }
 
     /**
@@ -98,14 +98,14 @@ class CollectCommand extends Command
                 $message .= " [Page]{$page->getUri()}";
             }
             $this->logger->error($message);
-            $this->output->writeln(strval($uri) . " error");
+            //$this->output->writeln(strval($uri) . " error");
         });
 
         //处理完成
         $dispatcher->bind(EventStore::COLLECTED_URI, function (CollectedUriEvent $event){
             $asset = $event->getAsset();
             $uri = $asset->getUri();
-            $this->output->writeln(strval($uri) . " ok");
+//            $this->output->writeln(strval($uri) . " ok");
         });
     }
 }

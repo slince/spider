@@ -92,7 +92,11 @@ class CollectCommand extends Command
         //下载失败
         $dispatcher->bind(EventStore::DOWNLOAD_URI_ERROR, function (DownloadUriErrorEvent $event){
             $uri = $event->getUri();
-            @file_put_contents(getcwd() . '/error.log', $uri .PHP_EOL, FILE_APPEND);
+            $message = '[URL]' . strval($uri);
+            if ($page = $uri->getParameter('page')) {
+                $message .= " [Page]{$page->getUri()}";
+            }
+            $this->logger->error($message);
             $this->output->writeln(strval($uri) . " error");
         });
 

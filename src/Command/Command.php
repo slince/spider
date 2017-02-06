@@ -6,6 +6,8 @@
 namespace Slince\Spider\Command;
 
 use GuzzleHttp\Client;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Slince\Config\Config;
 use Slince\Spider\Exception\InvalidArgumentException;
 use Slince\Spider\Spider;
@@ -38,6 +40,11 @@ class Command extends BaseCommand
      * @var Config
      */
     protected $configs;
+
+    /**
+     * @var Logger;
+     */
+    protected $logger;
 
     public function initialize(InputInterface $input, OutputInterface $output)
     {
@@ -123,5 +130,19 @@ class Command extends BaseCommand
     {
         $options = isset($this->configs['httpClient']) ? $this->configs['httpClient'] : [];
         $this->spider->getDownloader()->setHttpClient(new Client($options));
+    }
+
+    /**
+     * 准备日志
+     */
+    protected function prepareLogger()
+    {
+        $channel = isset($this->configs['log']['channel']) ? $this->configs['log']['channel'] : 'spider-collect';
+        $savePath = isset($this->configs['log']['savePath']) ? $this->configs['log']['savePath'] : getcwd() . '/logs/';
+        $logger = new Logger($channel, [
+            new StreamHandler($savePath . 'error.log', Logger::ERROR),
+            new StreamHandler($savePath . 'success.log', Logger::INFO),
+        ]);
+        $this->logger = $logger;
     }
 }

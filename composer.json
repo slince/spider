@@ -18,7 +18,8 @@
         "bupt1987/html-parser": "~3.0",
         "symfony/filesystem": "~3.0",
         "symfony/console": "~3.0",
-        "hoa/mime": "~3.0"
+        "hoa/mime": "~3.0",
+        "monolog/monolog": "^1.22"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.6"

@@ -6,11 +6,13 @@
 namespace Slince\Spider\Processor\HtmlCollector;
 
 use Slince\Spider\Asset\AssetInterface;
+use Slince\Spider\Exception\RuntimeException;
 use Slince\Spider\Processor\Processor;
 use Slince\Spider\Spider;
 use Slince\Spider\Uri;
 use Slince\Spider\Utility;
 use Slince\Spider\Asset\Html;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
 class HtmlCollector extends Processor
@@ -167,7 +169,11 @@ class HtmlCollector extends Processor
                 $parentAsset->getContent()
             ));
         }
-        $this->filesystem->dumpFile($this->generateFileName($asset), $asset->getContent());
+        try {
+            $this->filesystem->dumpFile($this->generateFileName($asset), $asset->getContent());
+        } catch (IOException $exception) {
+            throw new RuntimeException(sprintf('Failed to write asset for "%s".', $asset->getUri()));
+        }
         //如果有页面正则则维护页面信息
         if ($pageUriPattern = $asset->getUri()->getParameter('pageUriPattern')) {
             if (!isset($this->pageUriPatternDownloadTimes[$pageUriPattern])) {

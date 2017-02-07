@@ -18,6 +18,7 @@ class Downloader
 
     /**
      * @param Uri $uri
+     * @throws RuntimeException
      * @return AssetInterface
      */
     public function download(Uri $uri)
@@ -28,8 +29,10 @@ class Downloader
             if ($response->getStatusCode() == '200') {
                 return AssetFactory::createFromPsr7Response($response, $uri);
             }
-        } catch (\Exception $exception) {}
-        throw new RuntimeException("Download failed");
+            throw new RuntimeException(sprintf("Download failed, response code [%s]", $response->getStatusCode()));
+        } catch (\Exception $exception) {
+            throw new RuntimeException(sprintf("Download failed, message [%s]", $exception->getMessage()));
+        }
     }
 
     /**

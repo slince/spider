@@ -181,7 +181,9 @@ class Spider
             try {
                 $asset = $this->downloader->download($uri);
             } catch (RuntimeException $exception) {
-                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URI_ERROR, new DownloadUriErrorEvent($uri, $this));
+                $this->dispatcher->dispatch(EventStore::DOWNLOAD_URI_ERROR, new DownloadUriErrorEvent($uri, $this, [
+                    'exception' => $exception
+                ]));
                 return false;
             }
             //记录已采集的链接

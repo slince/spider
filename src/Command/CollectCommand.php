@@ -97,15 +97,17 @@ class CollectCommand extends Command
             if ($page = $uri->getParameter('page')) {
                 $message .= " [Page]{$page->getUri()}";
             }
+            $exception = $event->getArgument('exception');
+            $message .= " [Exception]{$exception->getMessage()}";
             $this->logger->error($message);
-            //$this->output->writeln(strval($uri) . " error");
+            $this->output->writeln(strval($uri) . " error");
         });
 
         //处理完成
         $dispatcher->bind(EventStore::COLLECTED_URI, function (CollectedUriEvent $event){
             $asset = $event->getAsset();
             $uri = $asset->getUri();
-//            $this->output->writeln(strval($uri) . " ok");
+            $this->output->writeln(strval($uri) . " ok");
         });
     }
 }

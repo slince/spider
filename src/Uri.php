@@ -16,6 +16,12 @@ class Uri extends Psr7Uri
      */
     protected $parameters = [];
 
+    public function __construct($uri = '')
+    {
+        $uri == '' || $uri = preg_replace('#(?<!:)/{2,}#', '/', $uri);
+        parent::__construct($uri);
+    }
+
     /**
      * @param array $parameters
      */

@@ -56,6 +56,7 @@ class CollectCommand extends Command
             throw new InvalidArgumentException("You should enter entrance url");
         }
         $this->getSpider()->run($entrance);
+        $this->output->writeln("Complete!");
         return true;
     }
 
